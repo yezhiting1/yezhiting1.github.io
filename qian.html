@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>荣誉前传</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 15px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            animation: fadeIn 0.8s ease;
+        }
+        h1 {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        h1 i {
+            color: #3498db;
+        }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+            font-size: 0.9rem;
+        }
+        .back-link:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(52, 152, 219, 0.4);
+        }
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            animation: slideUp 0.8s ease;
+            transition: transform 0.3s ease;
+        }
+        .section:hover {
+            transform: translateY(-5px);
+        }
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f0f3f8;
+        }
+        .section-title i {
+            color: #3498db;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        th, td {
+            border: none;
+            padding: 12px 10px;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+        thead {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+        }
+        th {
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        tbody tr {
+            transition: all 0.3s ease;
+        }
+        tbody tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        tbody tr:hover {
+            background-color: #e8f4fc;
+        }
+        .level-national {
+            border-left: 4px solid #e74c3c;
+        }
+        .level-provincial {
+            border-left: 4px solid #f39c12;
+        }
+        .level-city {
+            border-left: 4px solid #3498db;
+        }
+        .level-school {
+            border-left: 4px solid #2ecc71;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        .badge-national {
+            background: #e74c3c;
+            color: white;
+        }
+        .badge-provincial {
+            background: #f39c12;
+            color: white;
+        }
+        .badge-city {
+            background: #3498db;
+            color: white;
+        }
+        .badge-school {
+            background: #2ecc71;
+            color: white;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* 移动端优化 */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+                padding: 12px;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+            .section {
+                padding: 15px;
+                margin-bottom: 20px;
+            }
+            .section-title {
+                font-size: 1.3rem;
+                margin-bottom: 15px;
+            }
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+                -webkit-overflow-scrolling: touch;
+            }
+            th, td {
+                padding: 10px 8px;
+                font-size: 0.85rem;
+            }
+            .back-link {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.3rem;
+            }
+            .section-title {
+                font-size: 1.2rem;
+            }
+            th, td {
+                padding: 8px 6px;
+                font-size: 0.8rem;
+            }
+            .badge {
+                font-size: 0.7rem;
+                padding: 3px 8px;
+            }
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            color: #7f8c8d;
+            font-size: 0.85rem;
+        }
+        
+        /* 表格列宽优化 */
+        th:nth-child(1), td:nth-child(1) {
+            width: 15%;
+            min-width: 80px;
+        }
+        th:nth-child(2), td:nth-child(2) {
+            width: 55%;
+            min-width: 180px;
+        }
+        th:nth-child(3), td:nth-child(3) {
+            width: 30%;
+            min-width: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-award"></i> 荣誉前传</h1>
+            <a href="hou.html" class="back-link">
+                <i class="fas fa-arrow-left"></i> 返回
+            </a>
+        </div>
+        
+        <!-- 荣誉前传部分 -->
+        <div class="section">
+            <h2 class="section-title"><i class="fas fa-trophy"></i> 2024.9以前——荣誉记录</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>时间</th>
+                        <th>奖励名称</th>
+                        <th>备注</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="level-provincial">
+                        <td>2021.10</td>
+                        <td>广东省岭南书法院书法比赛硬笔组</td>
+                        <td><span class="badge badge-school">省二等奖</span></td>
+                    </tr>
+                    <tr class="level-city">
+                        <td>2021.10</td>
+                        <td>广东省岭南书法院书法比赛硬笔组</td>
+                        <td><span class="badge badge-school">市铜奖</span></td>
+                    </tr>
+                    <tr class="level-provincial">
+                        <td>2021.10</td>
+                        <td>广东省岭南书法院书法比赛软笔组</td>
+                        <td><span class="badge badge-school">省入围奖</span></td>
+                    </tr>
+                    <tr class="level-city">
+                        <td>2021.10</td>
+                        <td>广东省岭南书法院书法比赛软笔组</td>
+                        <td><span class="badge badge-school">市优秀奖</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2021.11</td>
+                        <td>汕尾职业技术学院书法知识竞赛</td>
+                        <td><span class="badge badge-school">校第二名</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2021.12</td>
+                        <td>汕尾职业技术学院分类手抄报</td>
+                        <td><span class="badge badge-school">院一等奖</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2022.12</td>
+                        <td>共青团汕尾职业技术学院委员会"青年思政先进个人"</td>
+                        <td><span class="badge badge-school">荣誉称号</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2021-2022学年</td>
+                        <td>汕尾职业技术学院"三好学生"称号</td>
+                        <td><span class="badge badge-school">荣誉称号</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2021-2022学年</td>
+                        <td>汕尾职业技术学院奖学金</td>
+                        <td><span class="badge badge-school">三等奖</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2021-2022学年</td>
+                        <td>汕尾职业技术学院书法协会宣传部第一骨干</td>
+                        <td><span class="badge badge-school">聘书</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2021-2022学年</td>
+                        <td>汕尾职业技术学院校园红场服务队队长聘书</td>
+                        <td><span class="badge badge-school">聘书</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2021-2022学年</td>
+                        <td>汕尾职业技术学院校园红场服务队推文组第一骨干聘书</td>
+                        <td><span class="badge badge-school">聘书</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2022.06</td>
+                        <td>第一届"三创杯"科技竞赛人工智能赛道"消防"编程</td>
+                        <td><span class="badge badge-school">三等奖</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2022.06</td>
+                        <td>第一届"三创杯"科技竞赛大数据赛道</td>
+                        <td><span class="badge badge-school">优秀奖</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2022.06</td>
+                        <td>第一届"三创杯"科技竞赛人工智能赛道"挑战"编程</td>
+                        <td><span class="badge badge-school">优秀奖</span></td>
+                    </tr>
+                    <tr class="level-provincial">
+                        <td>2022.10</td>
+                        <td>中国工业与应用数学学会全国大学生数学建模</td>
+                        <td><span class="badge badge-school">省优胜奖</span></td>
+                    </tr>
+                    <tr class="level-city">
+                        <td>2022.10</td>
+                        <td>汕尾市教育局"汕尾市青少年编程大赛优秀科技志愿者"称号</td>
+                        <td><span class="badge badge-school">荣誉称号</span></td>
+                    </tr>
+                    <tr class="level-provincial">
+                        <td>2023.05</td>
+                        <td>广东省书法家协会"岭南书法"软笔组</td>
+                        <td><span class="badge badge-school">省优秀奖</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2023.06</td>
+                        <td>第二届"三创杯"科技竞赛数字媒体赛道</td>
+                        <td><span class="badge badge-school">三等奖</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2023.06</td>
+                        <td>第二届"三创杯"科技竞赛人工智能赛道</td>
+                        <td><span class="badge badge-school">优秀奖</span></td>
+                    </tr>
+                    <tr class="level-provincial">
+                        <td>2023.06</td>
+                        <td>浙江省数学会长三角数学建模</td>
+                        <td><span class="badge badge-school">省二等奖</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2023.06</td>
+                        <td>第二届"三创杯"科技竞赛大数据赛道</td>
+                        <td><span class="badge badge-school">二等奖</span></td>
+                    </tr>
+                    <tr class="level-national">
+                        <td>2023.10</td>
+                        <td>高教社杯全国大学生数学建模</td>
+                        <td><span class="badge badge-school">优秀奖</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2023.05</td>
+                        <td>汕尾职业技术学院五四红旗团支部</td>
+                        <td><span class="badge badge-school">荣誉称号</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2023.12</td>
+                        <td>汕尾职业技术学院奖学金</td>
+                        <td><span class="badge badge-school">三等奖</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2024.04</td>
+                        <td>汕尾职业技术学院优秀毕业生</td>
+                        <td><span class="badge badge-school">荣誉称号</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2024.01.11</td>
+                        <td>大数据应用开发(Python)职业技能等级证书</td>
+                        <td><span class="badge badge-school">等级证书</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2023-2024年</td>
+                        <td>"泰迪杯"数据分析职业技能证书</td>
+                        <td><span class="badge badge-school">等级证书</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2017-2018学年</td>
+                        <td>三好学生</td>
+                        <td><span class="badge badge-school">荣誉称号</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2016.05.10</td>
+                        <td>陆河县县级中学优秀学生干部</td>
+                        <td><span class="badge badge-school">荣誉称号</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2016.09.01</td>
+                        <td>2015-2016学年第二学期期末学校</td>
+                        <td><span class="badge badge-school">第9名</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2016.02.22</td>
+                        <td>2015-2016学年第一学期期末学校</td>
+                        <td><span class="badge badge-school">第7名</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2015.12.01</td>
+                        <td>2015-2016学年第一学期中段考班级</td>
+                        <td><span class="badge badge-school">第一名</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2015.03</td>
+                        <td>2014-2015学年第一学期期末考学校</td>
+                        <td><span class="badge badge-school">第二名</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2014.11.18</td>
+                        <td>2014-2015学年第一学期中段考学校</td>
+                        <td><span class="badge badge-school">前十</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2014.09.15</td>
+                        <td>2013-2014学年第二学期期末学校</td>
+                        <td><span class="badge badge-school">前十</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2017.05.16</td>
+                        <td>三峰杯征文比赛</td>
+                        <td><span class="badge badge-school">三等奖</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2016.02.22</td>
+                        <td>2015-2016学年第二学期三好学生</td>
+                        <td><span class="badge badge-school">荣誉称号</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2017.03.15</td>
+                        <td>2016-2017学年第二学期禁毒征文比赛</td>
+                        <td><span class="badge badge-school">二等奖</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2017.03.16</td>
+                        <td>校园禁毒征文比赛</td>
+                        <td><span class="badge badge-school">三等奖</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2016.11.16</td>
+                        <td>2016-2017学年期中考学习标兵</td>
+                        <td><span class="badge badge-school">荣誉称号</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2017.02.13</td>
+                        <td>2016-2017学年第一学期三好学生</td>
+                        <td><span class="badge badge-school">荣誉称号</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2017.03</td>
+                        <td>2016-2017学年第一学期优秀团干部</td>
+                        <td><span class="badge badge-school">荣誉称号</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2016.12.23</td>
+                        <td>九年级数学知识竞赛</td>
+                        <td><span class="badge badge-school">优秀奖</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2016.02.22</td>
+                        <td>政治、历史知识竞赛优秀选手</td>
+                        <td><span class="badge badge-school">荣誉称号</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2015.09.28</td>
+                        <td>八年级规范字书写比赛</td>
+                        <td><span class="badge badge-school">一等奖</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2016.01</td>
+                        <td>八年级物理知识竞赛</td>
+                        <td><span class="badge badge-school">三等奖</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2016.05.23</td>
+                        <td>七八年级数学手抄报比赛</td>
+                        <td><span class="badge badge-school">特等奖</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2016.06.16</td>
+                        <td>八年级古诗文默写</td>
+                        <td><span class="badge badge-school">优秀奖</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2015.06.02</td>
+                        <td>七年级现场作文比赛</td>
+                        <td><span class="badge badge-school">二等奖</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2014.11.10</td>
+                        <td>七年级数学手抄报</td>
+                        <td><span class="badge badge-school">二等奖</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2007-2014学年</td>
+                        <td>数学奥林匹克竞赛县一等奖；书法比赛一等奖；三好学生；优秀干部等</td>
+                        <td><span class="badge badge-school">多项荣誉</span></td>
+                    </tr>
+                    <tr class="level-school">
+                        <td>2012.11</td>
+                        <td>中华少年编辑部"中华杯"第四回全国小学生作文</td>
+                        <td><span class="badge badge-school">二等奖</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <footer>
+            <p>© 2025 荣誉前传页面 | 最后更新: 2025年8月</p>
+        </footer>
+    </div>
+</body>
+</html>

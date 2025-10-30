@@ -1,0 +1,1596 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>叶志挺 - 个人简历</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .animate-fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.8s ease, transform 0.8s ease; }
+        .animate-fade-in.active { opacity: 1; transform: translateY(0); }
+        .card-hover { transition: all 0.3s ease; cursor: pointer; }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); }
+        .card-hover.clicked { transform: scale(0.98); }
+        .num-counter { transition: all 0.5s ease; position: relative; }
+        .num-counter.count-complete { animation: pulse 0.5s ease; }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        /* 图片滑动栏样式 */
+        .image-slider {
+            position: relative;
+            overflow: hidden;
+            border-radius: 1.5rem;
+        }
+        .slider-track {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            height: 400px;
+        }
+        .slider-item {
+            min-width: 100%;
+            position: relative;
+        }
+        .slider-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 1.5rem;
+        }
+        .slider-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+            padding: 2rem 1.5rem 1.5rem;
+            border-bottom-left-radius: 1.5rem;
+            border-bottom-right-radius: 1.5rem;
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.5s ease 0.3s;
+        }
+        .slider-item.active .slider-caption {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .slider-control {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(4px);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+        .slider-control:hover {
+            background: rgba(255,255,255,0.4);
+            transform: translateY(-50%) scale(1.1);
+        }
+        .slider-prev {
+            left: 1rem;
+        }
+        .slider-next {
+            right: 1rem;
+        }
+        .slider-dots {
+            position: absolute;
+            bottom: 1rem;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            z-index: 2;
+        }
+        .slider-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .slider-dot.active {
+            background: white;
+            width: 30px;
+            border-radius: 6px;
+        }
+        
+        /* 视差画廊样式 */
+        .parallax-gallery {
+            position: relative;
+            overflow: hidden;
+            border-radius: 1.5rem;
+            margin-bottom: 16px;
+        }
+        .parallax-container {
+            position: relative;
+            height: 500px;
+        }
+        .parallax-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a2a6c 0%, #b21f1f 50%, #fdbb2d 100%);
+            z-index: 0;
+        }
+        .parallax-track {
+            position: absolute;
+            display: flex;
+            gap: 2rem;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            will-change: transform;
+        }
+        .parallax-item {
+            width: 300px;
+            height: 400px;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            transform: perspective(800px) rotateY(0deg);
+            transition: all 0.5s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        .parallax-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.7s ease;
+        }
+        .parallax-item:hover {
+            transform: perspective(800px) rotateY(10deg) scale(1.05);
+            z-index: 10;
+        }
+        .parallax-item:hover img {
+            transform: scale(1.1);
+        }
+        .parallax-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+            padding: 1.5rem;
+            transform: translateY(100%);
+            transition: transform 0.5s ease;
+        }
+        .parallax-item:hover .parallax-caption {
+            transform: translateY(0);
+        }
+        .parallax-control {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(8px);
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+        }
+        .parallax-control:hover {
+            background: rgba(255,255,255,0.4);
+            transform: translateY(-50%) scale(1.1);
+        }
+        .parallax-prev {
+            left: 1rem;
+        }
+        .parallax-next {
+            right: 1rem;
+        }
+        
+        /* 动态网格画廊样式 */
+        .dynamic-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 16px;
+        }
+        .grid-item {
+            position: relative;
+            border-radius: 1rem;
+            overflow: hidden;
+            aspect-ratio: 4/3;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+            cursor: pointer;
+        }
+        .grid-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .grid-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        .grid-item:hover img {
+            transform: scale(1.1);
+        }
+        .grid-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 1.5rem;
+            color: white;
+        }
+        .grid-item:hover .grid-overlay {
+            opacity: 1;
+        }
+        .grid-category {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            display: inline-block;
+            width: fit-content;
+        }
+        
+        /* 图片查看器样式 */
+        .image-viewer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .image-viewer.active {
+            display: block;
+            opacity: 1;
+        }
+        .viewer-content {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        .viewer-image {
+            max-width: 90%;
+            max-height: 80%;
+            object-fit: contain;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.5);
+        }
+        .viewer-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            color: white;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        .viewer-close:hover {
+            transform: scale(1.1);
+        }
+        .viewer-nav {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 1rem;
+            box-sizing: border-box;
+        }
+        .viewer-prev, .viewer-next {
+            color: white;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .viewer-prev:hover, .viewer-next:hover {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.1);
+        }
+        .viewer-caption {
+            position: absolute;
+            bottom: 2rem;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: white;
+            padding: 0 2rem;
+        }
+        .viewer-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .viewer-desc {
+            opacity: 0.8;
+        }
+        
+        /* 文字滚动框样式 */
+        .text-scroll-container {
+            position: relative;
+            overflow: hidden;
+            height: 200px;
+            border-radius: 1rem;
+        }
+        .text-scroll-content {
+            position: absolute;
+            width: 100%;
+            animation: scrollUp 15s linear infinite;
+        }
+        .text-scroll-item {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        .text-scroll-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        @keyframes scrollUp {
+            0% {
+                transform: translateY(100%);
+            }
+            100% {
+                transform: translateY(-100%);
+            }
+        }
+        .text-scroll-container:hover .text-scroll-content {
+            animation-play-state: paused;
+        }
+        
+        /* 导航栏交互样式 */
+        nav a {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        nav a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background-color: blue-700;
+            transition: width 0.3s ease;
+        }
+        nav a:hover::after, nav a.active::after {
+            width: 100%;
+            background-color: #2563eb;
+        }
+        nav a.active {
+            color: #2563eb;
+            font-weight: 500;
+        }
+        
+        /* 按钮点击效果 */
+        .clickable {
+            transition: all 0.2s ease;
+        }
+        .clickable:active {
+            transform: scale(0.96);
+        }
+        
+        /* 统计数字卡片样式 */
+        .stat-card {
+            transition: all 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .slider-track {
+                height: 280px;
+            }
+            .slider-control {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+            .text-scroll-container {
+                height: 180px;
+            }
+            .parallax-container {
+                height: 400px;
+            }
+            .parallax-item {
+                width: 220px;
+                height: 300px;
+            }
+            .dynamic-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <!-- 顶部导航栏 -->
+    <nav class="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-sm shadow-sm z-50 transition-all 0.3s ease">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-xl font-bold text-blue-800">叶志挺 <span class="text-sm font-normal text-gray-500">| 国家奖学金候选人</span></h1>
+            <div class="flex gap-6">
+                <a href="#info" class="text-gray-600 hover:text-blue-700 transition clickable">个人信息</a>
+                <a href="#study" class="text-gray-600 hover:text-blue-700 transition clickable">学习成绩</a>
+             
+                <a href="#competition" class="text-gray-600 hover:text-blue-700 transition clickable">竞赛荣誉</a>
+                <a href="#work" class="text-gray-600 hover:text-blue-700 transition clickable">工作经历</a>
+ <a href="#gallery" class="text-gray-600 hover:text-blue-700 transition clickable">个人风采</a>
+                <a href="#practice" class="text-gray-600 hover:text-blue-700 transition clickable">实践志愿</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 头部横幅 -->
+    <header class="pt-24 pb-16 bg-gradient-to-r from-blue-700 to-blue-900 text-white">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-4xl md:text-5xl font-bold mb-4 animate-fade-in">立鸿鹄志 做五先人</h2>
+            <p class="text-xl md:text-2xl opacity-90 mb-8 animate-fade-in" style="transition-delay: 0.2s">计算机学院 22级计算机科学与技术 | 中共党员</p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <div class="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full animate-fade-in stat-card" style="transition-delay: 0.4s">
+                    <i class="fa-solid fa-user-graduate mr-2"></i> 综测排名 1/50
+                </div>
+                <div class="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full animate-fade-in stat-card" style="transition-delay: 0.6s">
+                    <i class="fa-solid fa-trophy mr-2"></i> 国家级奖项 <span class="num-counter" data-target="5">0</span>项
+                </div>
+                <div class="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full animate-fade-in stat-card" style="transition-delay: 0.8s">
+                    <i class="fa-solid fa-hand-holding-heart mr-2"></i> 志愿时长 <span class="num-counter" data-target="127">0</span>h+
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <main class="container mx-auto px-4 py-12">
+        <!-- 个人信息模块 -->
+        <section id="info" class="mb-16 animate-fade-in">
+            <h3 class="text-2xl font-bold mb-8 text-blue-800 flex items-center">
+                <i class="fa-solid fa-id-card-clip mr-3"></i> 个人信息
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-xl shadow-md p-6 card-hover">
+                    <h4 class="text-lg font-semibold mb-4 text-gray-700">基本信息</h4>
+                    <ul class="space-y-3">
+                        <li class="flex justify-between p-2 hover:bg-gray-50 rounded transition">
+                            <span class="text-gray-500">姓名</span>
+                            <span class="font-medium">叶志挺</span>
+                        </li>
+                        <li class="flex justify-between p-2 hover:bg-gray-50 rounded transition">
+                            <span class="text-gray-500">班级</span>
+                            <span class="font-medium">22计科11班</span>
+                        </li>
+                        <li class="flex justify-between p-2 hover:bg-gray-50 rounded transition">
+                            <span class="text-gray-500">政治面貌</span>
+                            <span class="font-medium text-red-600">中共党员</span>
+                        </li>
+                        <li class="flex justify-between p-2 hover:bg-gray-50 rounded transition">
+                            <span class="text-gray-500">联系方式</span>
+                            <span class="font-medium">13437505514</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="bg-white rounded-xl shadow-md p-6 card-hover">
+                    <h4 class="text-lg font-semibold mb-4 text-gray-700">现任职务</h4>
+                    <ul class="space-y-3">
+                        <li class="flex items-start p-2 hover:bg-gray-50 rounded transition">
+                            <i class="fa-solid fa-check-circle text-blue-600 mt-1 mr-2"></i>
+                            <span>提名计算机学院党委委员、学院第三党支部组织委员</span>
+                        </li>
+                        <li class="flex items-start p-2 hover:bg-gray-50 rounded transition">
+                            <i class="fa-solid fa-check-circle text-blue-600 mt-1 mr-2"></i>
+                            <span>22计科11班学习委员</span>
+                        </li>
+                        <li class="flex items-start p-2 hover:bg-gray-50 rounded transition">
+                            <i class="fa-solid fa-check-circle text-blue-600 mt-1 mr-2"></i>
+                            <span>汕尾市红场大讲堂志愿服务队队长兼推文组组长</span>
+                        </li>
+                        <li class="flex items-start p-2 hover:bg-gray-50 rounded transition">
+                            <i class="fa-solid fa-check-circle text-blue-600 mt-1 mr-2"></i>
+                            <span>书法协会宣传部部长</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- 学习成绩模块 -->
+        <section id="study" class="mb-16 animate-fade-in">
+            <h3 class="text-2xl font-bold mb-8 text-blue-800 flex items-center">
+                <i class="fa-solid fa-book-open-reader mr-3"></i> 学习成绩
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-xl shadow-md p-6 card-hover">
+                    <h4 class="text-lg font-semibold mb-6 text-gray-700">核心成绩</h4>
+                    <div class="space-y-8">
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-gray-600">平均学分绩</span>
+                                <span class="text-3xl font-bold text-blue-700 num-counter" data-target="4.21">0.00</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                                <div class="bg-blue-700 h-2.5 rounded-full" style="width: 0%" data-width="95%"></div>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-1">年级排名 1/50</p>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-gray-600">学年综测</span>
+                                <span class="text-3xl font-bold text-blue-700 num-counter" data-target="95">0</span><span class="text-2xl font-bold text-blue-700">+</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                                <div class="bg-blue-700 h-2.5 rounded-full" style="width: 0%" data-width="98%"></div>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-1">年级排名 1/50</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-md p-6 card-hover">
+                    <h4 class="text-lg font-semibold mb-6 text-gray-700">技能证书</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-500 hover:bg-blue-50 transition">
+                            <i class="fa-solid fa-laptop-code text-blue-600 text-2xl mb-2"></i>
+                            <h5 class="font-medium mb-1">计算机二级证书</h5>
+                            <p class="text-sm text-gray-500">Python程序设计</p>
+                        </div>
+                        <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-500 hover:bg-blue-50 transition">
+                            <i class="fa-solid fa-database text-blue-600 text-2xl mb-2"></i>
+                            <h5 class="font-medium mb-1">大数据应用开发中级</h5>
+                            <p class="text-sm text-gray-500">Python方向</p>
+                        </div>
+                        <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-500 hover:bg-blue-50 transition">
+                            <i class="fa-solid fa-chart-simple text-blue-600 text-2xl mb-2"></i>
+                            <h5 class="font-medium mb-1">数据分析职业技能初级</h5>
+                            <p class="text-sm text-gray-500">"泰迪杯"认证</p>
+                        </div>
+                        <div class="border border-gray-200 rounded-lg p-4 hover:border-blue-500 hover:bg-blue-50 transition">
+                            <i class="fa-solid fa-pen-nib text-blue-600 text-2xl mb-2"></i>
+                            <h5 class="font-medium mb-1">书法类奖项</h5>
+                            <p class="text-sm text-gray-500">省级二等奖1项、优秀奖3项</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-6 bg-white rounded-xl shadow-md p-6 card-hover">
+                <h4 class="text-lg font-semibold mb-4 text-gray-700">成绩可视化</h4>
+                <div class="h-64">
+                    <canvas id="studyChart"></canvas>
+                </div>
+                <div class="mt-4 text-center">
+                    <a href="transcript.html" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                        <i class="fa-solid fa-chart-line mr-2"></i> 查看详细成绩分析
+                    </a>
+                </div>
+            </div>
+        </section>
+
+
+       
+
+
+        <!-- 竞赛荣誉模块 -->
+        <section id="competition" class="mb-16 animate-fade-in">
+            <h3 class="text-2xl font-bold mb-8 text-blue-800 flex items-center">
+                <i class="fa-solid fa-medal mr-3"></i> 竞赛荣誉
+            </h3>
+            <div class="mb-6 flex flex-wrap gap-4">
+                <div class="bg-blue-700 text-white px-4 py-2 rounded-full text-sm font-medium stat-card clickable">
+                    <span class="num-counter" data-target="5">0</span> 国家级奖项
+                </div>
+                <div class="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-medium stat-card clickable">
+                    <span class="num-counter" data-target="7">0</span> 省级奖项
+                </div>
+                <div class="bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-medium stat-card clickable">
+                    <span class="num-counter" data-target="4">0</span> 校级奖项
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- 国家级奖项 -->
+                <div class="bg-white rounded-xl shadow-md p-6 card-hover border-t-4 border-red-500">
+                    <h4 class="text-lg font-semibold mb-4 text-gray-700 flex items-center">
+                        <i class="fa-solid fa-flag text-red-500 mr-2"></i> 国家级
+                    </h4>
+                    <ul class="space-y-3">
+                        <li class="flex items-start p-2 hover:bg-gray-50 rounded transition">
+                            <i class="fa-solid fa-star text-yellow-500 mt-1 mr-2"></i>
+                            <div>
+                                <span class="font-medium">全国大学生高新技术竞赛国赛</span>
+                                <p class="text-sm text-gray-500">数据分析实操 | 一等奖</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start p-2 hover:bg-gray-50 rounded transition">
+                            <i class="fa-solid fa-star text-yellow-500 mt-1 mr-2"></i>
+                            <div>
+                                <span class="font-medium">全国大学生高新技术竞赛国赛</span>
+                                <p class="text-sm text-gray-500">前端竞赛 | 一等奖</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start p-2 hover:bg-gray-50 rounded transition">
+                            <i class="fa-solid fa-star text-yellow-500 mt-1 mr-2"></i>
+                            <div>
+                                <span class="font-medium">全国大学生高新技术竞赛国赛</span>
+                                <p class="text-sm text-gray-500">大模型竞赛 | 二等奖</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start p-2 hover:bg-gray-50 rounded transition">
+                            <i class="fa-solid fa-star text-yellow-500 mt-1 mr-2"></i>
+                            <div>
+                                <span class="font-medium">全国大学生英语翻译能力竞赛</span>
+                                <p class="text-sm text-gray-500">英译汉组 | 三等奖</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start p-2 hover:bg-gray-50 rounded transition">
+                            <i class="fa-solid fa-star text-yellow-500 mt-1 mr-2"></i>
+                            <div>
+                                <span class="font-medium">全国大学生高新技术竞赛国赛</span>
+                                <p class="text-sm text-gray-500">Python数据分析 | 一等奖</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <!-- 省级奖项 -->
+                <div class="bg-white rounded-xl shadow-md p-6 card-hover border-t-4 border-orange-500">
+                    <h4 class="text-lg font-semibold mb-4 text-gray-700 flex items-center">
+                        <i class="fa-solid fa-map-marker-alt text-orange-500 mr-2"></i> 省级
+                    </h4>
+                    <ul class="space-y-3">
+                        <li class="flex items-start p-2 hover:bg-gray-50 rounded transition">
+                            <i class="fa-solid fa-award text-orange-500 mt-1 mr-2"></i>
+                            <div>
+                                <span class="font-medium">中国高校计算机大赛-移动应用创新赛</span>
+                                <p class="text-sm text-gray-500">华南赛区 | 二等奖</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start p-2 hover:bg-gray-50 rounded transition">
+                            <i class="fa-solid fa-award text-orange-500 mt-1 mr-2"></i>
+                            <div>
+                                <span class="font-medium">全国高校计算机能力挑战赛</span>
+                                <p class="text-sm text-gray-500">华南赛区 | 三等奖</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start p-2 hover:bg-gray-50 rounded transition">
+                            <i class="fa-solid fa-award text-orange-500 mt-1 mr-2"></i>
+                            <div>
+                                <span class="font-medium">全国大学生创新创业能力大赛</span>
+                                <p class="text-sm text-gray-500">省级 | 一等奖</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start p-2 hover:bg-gray-50 rounded transition">
+                            <i class="fa-solid fa-award text-orange-500 mt-1 mr-2"></i>
+                            <div>
+                                <span class="font-medium">全国高校计算机技能大赛</span>
+                                <p class="text-sm text-gray-500">编程算法赛 | 省三等奖</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start p-2 hover:bg-gray-50 rounded transition">
+                            <i class="fa-solid fa-award text-orange-500 mt-1 mr-2"></i>
+                            <div>
+                                <span class="font-medium">海峡两岸暨港澳地区大学生计算机创新作品赛</span>
+                                <p class="text-sm text-gray-500">广东省赛 | 优秀奖</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <!-- 校级奖项 -->
+                <div class="bg-white rounded-xl shadow-md p-6 card-hover border-t-4 border-blue-500">
+                    <h4 class="text-lg font-semibold mb-4 text-gray-700 flex items-center">
+                        <i class="fa-solid fa-school text-blue-500 mr-2"></i> 校级
+                    </h4>
+                    <ul class="space-y-3">
+                        <li class="flex items-start p-2 hover:bg-gray-50 rounded transition">
+                            <i class="fa-solid fa-trophy text-blue-500 mt-1 mr-2"></i>
+                            <div>
+                                <span class="font-medium">第十八届"挑战杯"大学生课外学术科技作品竞赛</span>
+                                <p class="text-sm text-gray-500">校级 | 三等奖</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start p-2 hover:bg-gray-50 rounded transition">
+                            <i class="fa-solid fa-trophy text-blue-500 mt-1 mr-2"></i>
+                            <div>
+                                <span class="font-medium">APP应用创意大赛</span>
+                                <p class="text-sm text-gray-500">校级 | 二等奖</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start p-2 hover:bg-gray-50 rounded transition">
+                            <i class="fa-solid fa-trophy text-blue-500 mt-1 mr-2"></i>
+                            <div>
+                                <span class="font-medium">宿舍公约海报校赛</span>
+                                <p class="text-sm text-gray-500">校级 | 三等奖</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start p-2 hover:bg-gray-50 rounded transition">
+                            <i class="fa-solid fa-trophy text-blue-500 mt-1 mr-2"></i>
+                            <div>
+                                <span class="font-medium">优秀共产党员</span>
+                                <p class="text-sm text-gray-500">2024-2025学年</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+<div class="mt-4 text-center">
+                    <a href="hou.html" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                        <i class="fa-solid fa-chart-line mr-2"></i> 查看全部荣誉详情
+                    </a>
+                </div>
+
+        </section>
+
+
+        <!-- 工作经历模块 -->
+        <section id="work" class="mb-16 animate-fade-in">
+            <h3 class="text-2xl font-bold mb-8 text-blue-800 flex items-center">
+                <i class="fa-solid fa-briefcase mr-3"></i> 工作经历
+            </h3>
+            <div class="relative">
+                <!-- 时间线轴线 -->
+                <div class="absolute left-0 md:left-1/2 h-full w-0.5 bg-blue-200 transform md:-translate-x-1/2"></div>
+                <!-- 工作项1 -->
+                <div class="relative mb-12 flex flex-col md:flex-row">
+                    <div class="md:w-1/2 md:pr-12 md:text-right mb-6 md:mb-0">
+                        <div class="bg-white rounded-xl shadow-md p-6 card-hover ml-0 md:ml-auto">
+                            <span class="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium mb-3">2024.09-至今</span>
+                            <h4 class="text-lg font-semibold mb-2 text-gray-700">学院第三党支部组织委员</h4>
+                            <ul class="text-gray-600 space-y-1 text-sm">
+                                <li>组织支部党员大会、转正通表大会等核心会议</li>
+                                <li>开展党的二十届三中全会学习、党建进宿舍等活动</li>
+                                <li>负责发展对象党课培训、推优答辩组织工作</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="absolute left-0 md:left-1/2 w-4 h-4 bg-blue-700 rounded-full transform -translate-x-1/2 mt-3 clickable"></div>
+                    <div class="md:w-1/2 md:pl-12"></div>
+                </div>
+                <!-- 工作项2 -->
+                <div class="relative mb-12 flex flex-col md:flex-row">
+                    <div class="md:w-1/2 md:pr-12 hidden md:block"></div>
+                    <div class="absolute left-0 md:left-1/2 w-4 h-4 bg-blue-700 rounded-full transform -translate-x-1/2 mt-3 clickable"></div>
+                    <div class="md:w-1/2 md:pl-12">
+                        <div class="bg-white rounded-xl shadow-md p-6 card-hover mr-0 md:mr-auto">
+                            <span class="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium mb-3">2023.09-至今</span>
+                            <h4 class="text-lg font-semibold mb-2 text-gray-700">红场大讲堂志愿服务队队长</h4>
+                            <ul class="text-gray-600 space-y-1 text-sm">
+                                <li>组织4次志愿服务活动、3次学术报告，接待市区党员</li>
+                                <li>负责秀米推文制作、素材收集与摄影整合，熟练使用单反</li>
+                                <li>带领团队完成红色文化宣传与推广工作</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <!-- 工作项3 -->
+                <div class="relative mb-12 flex flex-col md:flex-row">
+                    <div class="md:w-1/2 md:pr-12 md:text-right mb-6 md:mb-0">
+                        <div class="bg-white rounded-xl shadow-md p-6 card-hover ml-0 md:ml-auto">
+                            <span class="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium mb-3">2022.09-2023.06</span>
+                            <h4 class="text-lg font-semibold mb-2 text-gray-700">书法协会宣传部部长</h4>
+                            <ul class="text-gray-600 space-y-1 text-sm">
+                                <li>设计6张活动海报、1面会旗及协会logo</li>
+                                <li>熟练运用PS、秀米、CDR等设计工具</li>
+                                <li>负责协会对外宣传与品牌形象打造</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="absolute left-0 md:left-1/2 w-4 h-4 bg-blue-700 rounded-full transform -translate-x-1/2 mt-3 clickable"></div>
+                    <div class="md:w-1/2 md:pl-12"></div>
+                </div>
+            </div>
+        </section>
+
+ <!-- 图片展示模块 - 增强版 -->
+        <section id="gallery" class="mb-16 animate-fade-in">
+            <h3 class="text-2xl font-bold mb-8 text-blue-800 flex items-center">
+                <i class="fa-solid fa-images mr-3"></i> 个人风采
+            </h3>
+            
+            <!-- 视差滚动画廊 -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover mb-12">
+                <div class="p-6 border-b border-gray-100">
+                    <h4 class="text-xl font-semibold text-gray-800">活动掠影</h4>
+                    <p class="text-gray-500 mt-1">沉浸式体验重要时刻</p>
+                </div>
+                <div class="parallax-gallery">
+                    <div class="parallax-container">
+                        <div class="parallax-bg"></div>
+                        <div class="parallax-track">
+                            <div class="parallax-item" data-img="https://picsum.photos/id/26/800/1000" data-title="全国大学生高新技术竞赛" data-desc="代表学校参加国赛并获得数据分析实操一等奖">
+                                <img src="https://picsum.photos/id/26/800/1000" alt="竞赛获奖现场">
+                                <div class="parallax-caption">
+                                    <h5 class="font-bold">全国大学生高新技术竞赛</h5>
+                                    <p class="text-sm opacity-90">数据分析实操一等奖</p>
+                                </div>
+                            </div>
+                            <div class="parallax-item" data-img="https://yezhiting1.github.io/image/image1.png" data-title="红场大讲堂志愿服务" data-desc="组织党员参观学习红色文化基地">
+                                <img src="https://picsum.photos/id/24/800/1000" alt="志愿服务活动">
+                                <div class="parallax-caption">
+                                    <h5 class="font-bold">红场大讲堂志愿服务</h5>
+                                    <p class="text-sm opacity-90">传承红色文化精神</p>
+                                </div>
+                            </div>
+  <div class="parallax-item" data-img="https://yezhiting1.github.io/image/image1.png" data-title="红场大讲堂志愿服务" data-desc="组织党员参观学习红色文化基地">
+                                <img src="https://picsum.photos/id/24/800/1000" alt="志愿服务活动">
+                                <div class="parallax-caption">
+                                    <h5 class="font-bold">红场大讲堂志愿服务</h5>
+                                    <p class="text-sm opacity-90">传承红色文化精神</p>
+                                </div>
+                            </div>
+
+                            <div class="parallax-item" data-img="https://yezhiting1.github.io/image/image2.png" data-title="三下乡社会实践" data-desc="带领团队开展乡村教育调研与帮扶">
+                                <img src="https://yezhiting1.github.io/image/image2.png" alt="社会实践活动">
+                                <div class="parallax-caption">
+                                    <h5 class="font-bold">三下乡社会实践</h5>
+                                    <p class="text-sm opacity-90">乡村教育调研与帮扶</p>
+                                </div>
+                            </div>
+                            <div class="parallax-item" data-img="https://yezhiting1.github.io/image/image3.png" data-title="书法作品展览" data-desc="艺术馆展出，《汕尾电视台》播报">
+                                <img src="https://yezhiting1.github.io/image/image3.png" alt="书法作品展示">
+                                <div class="parallax-caption">
+                                    <h5 class="font-bold">书法作品展览</h5>
+                                    <p class="text-sm opacity-90">艺术馆展出，《汕尾电视台》播报</p>
+                                </div>
+                            </div>
+                            <div class="parallax-item" data-img="https://yezhiting1.github.io/image/image4.png" data-title="党支部组织生活" data-desc="开展党的二十届三中全会精神学习活动">
+                                <img src="https://yezhiting1.github.io/image/image4.png" alt="党支部活动">
+                                <div class="parallax-caption">
+                                    <h5 class="font-bold">党支部组织生活</h5>
+                                    <p class="text-sm opacity-90">学习党的二十届三中全会精神</p>
+                                </div>
+                            </div>
+                             <div class="parallax-item" data-img="https://yezhiting1.github.io/image/image5.png" data-title="红场服务队" data-desc="红场服务队">
+                                <img src="https://yezhiting1.github.io/image/image5.png" alt="红场服务队">
+                                <div class="parallax-caption">
+                                    <h5 class="font-bold">汕尾红场志愿服务队</h5>
+                                    <p class="text-sm opacity-90">副队兼推文组组长</p>
+                                </div>
+                            </div>
+<div class="parallax-item" data-img="https://yezhiting1.github.io/image/image6.png" data-title="指导小学编程" data-desc="助力学生获国家级编程金奖奖项">
+                                <img src="https://yezhiting1.github.io/image/image6.png" alt="志愿活动">
+                                <div class="parallax-caption">
+                                    <h5 class="font-bold">指导小学编程</h5>
+                                    <p class="text-sm opacity-90">助力学生获国家级编程金奖奖项</p>
+                                </div>
+                            </div>
+<div class="parallax-item" data-img="https://yezhiting1.github.io/image/image7.png" data-title="竞赛活动" data-desc="竞赛留影">
+                                <img src="https://yezhiting1.github.io/image/image7.png" alt="竞赛留影">
+                                <div class="parallax-caption">
+                                    <h5 class="font-bold">竞赛活动</h5>
+                                    <p class="text-sm opacity-90">竞赛留影</p>
+                                </div>
+                            </div>
+<div class="parallax-item" data-img="https://yezhiting1.github.io/image/image8.png" data-title="志愿服务" data-desc="助推老人、智能汽车下乡等">
+                                <img src="https://yezhiting1.github.io/image/image8.png" alt="志愿服务">
+                                <div class="parallax-caption">
+                                    <h5 class="font-bold">志愿服务</h5>
+                                    <p class="text-sm opacity-90">助推老人、智能汽车下乡等</p>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="parallax-control parallax-prev clickable">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </button>
+                        <button class="parallax-control parallax-next clickable">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+          
+        
+        <!-- 图片查看器 -->
+        <div class="image-viewer" id="imageViewer">
+            <div class="viewer-content">
+                <img src="" alt="Large image view" class="viewer-image" id="viewerImage">
+                <button class="viewer-close clickable" id="viewerClose">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <div class="viewer-nav">
+                    <button class="viewer-prev clickable" id="viewerPrev">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <button class="viewer-next clickable" id="viewerNext">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="viewer-caption">
+                    <h4 class="viewer-title" id="viewerTitle"></h4>
+                    <p class="viewer-desc" id="viewerDesc"></p>
+                </div>
+            </div>
+        </div>
+
+ 
+            <!-- 动态网格画廊 -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                <div class="p-6 border-b border-gray-100">
+                    <h4 class="text-xl font-semibold text-gray-800">精彩瞬间</h4>
+                    <p class="text-gray-500 mt-1">探索更多成长足迹</p>
+                </div>
+                <div class="p-6">
+                    <div class="dynamic-grid">
+                        <div class="grid-item" data-img="https://yezhiting1.github.io/image/image18.png" data-title="思想上" data-desc="思想觉悟、责任担当" data-category="思想觉悟、责任担当">
+    <img src="https://yezhiting1.github.io/image/image18.png" alt="思想觉悟、责任担当">
+                            <div class="grid-overlay">
+                                <span class="grid-category">思想上</span>
+                                <h5 class="font-bold">思想觉悟、责任担当</h5>
+                            </div>
+                        </div>
+                           <div class="grid-item" data-img="https://picsum.photos/id/40/800/600" data-title="学习上" data-desc="专业扎实、知识积淀" data-category="专业扎实、知识积淀">
+                            <img src="https://yezhiting1.github.io/image/image11.png" alt="专业扎实、知识积淀">
+                            <div class="grid-overlay">
+                                <span class="grid-category">学习上</span>
+                                <h5 class="font-bold">专业扎实、知识积淀</h5>
+                            </div>
+                        </div>
+                        <div class="grid-item" data-img="https://picsum.photos/id/60/800/600" data-title="竞赛上" data-desc="学院第三党支部学习活动" data-category="党建活动">
+                            <img src="https://yezhiting1.github.io/image/image12.png" alt="党员学习会">
+                            <div class="grid-overlay">
+                                <span class="grid-category">竞赛上</span>
+                                <h5 class="font-bold">党员学习会</h5>
+                            </div>
+                        </div>
+                        <div class="grid-item" data-img="https://picsum.photos/id/62/800/600" data-title="竞赛上" data-desc="竞技水平、创新突破" data-category="竞技水平、创新突破">
+                            <img src="https://yezhiting1.github.io/image/image13.png" alt="竞技水平、创新突破">
+                            <div class="grid-overlay">
+                                <span class="grid-category">竞赛上</span>
+                                <h5 class="font-bold">竞技水平、创新突破</h5>
+                            </div>
+                        </div>
+<div class="grid-item" data-img="https://picsum.photos/id/62/800/600" data-title="实践上" data-desc="实战能力、协作效能" data-category="实战能力、协作效能">
+                            <img src="https://yezhiting1.github.io/image/image14.png" alt="实战能力、协作效能">
+                            <div class="grid-overlay">
+                                <span class="grid-category">实践上</span>
+                                <h5 class="font-bold">实战能力、协作效能</h5>
+                            </div>
+                        </div>
+
+  <div class="grid-item" data-img="https://picsum.photos/id/60/800/600" data-title="工作上" data-desc="执行效能、组织能力" data-category="执行效能、组织能力">
+                            <img src="https://yezhiting1.github.io/image/image15.png" alt="执行效能、组织能力">
+                            <div class="grid-overlay">
+                                <span class="grid-category">工作上</span>
+                                <h5 class="font-bold">执行效能、组织能力</h5>
+                            </div>
+ </div>
+<div class="grid-item" data-img="https://picsum.photos/id/60/800/600" data-title="工作上" data-desc="实战能力、协作效能" data-category="实战能力、协作效能">
+                            <img src="https://yezhiting1.github.io/image/image16.png" alt="执行效能、组织能力">
+                            <div class="grid-overlay">
+                                <span class="grid-category">工作上</span>
+                                <h5 class="font-bold">执行效能、组织能力</h5>
+                            </div>
+ </div>
+
+<div class="grid-item" data-img="https://picsum.photos/id/60/800/600" data-title="实践上" data-desc="实战能力、协作效能" data-category="实战能力、协作效能">
+                            <img src="https://yezhiting1.github.io/image/image17.png" alt="实战能力、协作效能">
+                            <div class="grid-overlay">
+                                <span class="grid-category">实践上</span>
+                                <h5 class="font-bold">实战能力、协作效能</h5>
+                            </div>
+ </div>
+
+
+
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 图片查看器 -->
+        <div class="image-viewer" id="imageViewer">
+            <div class="viewer-content">
+                <img src="" alt="Large image view" class="viewer-image" id="viewerImage">
+                <button class="viewer-close clickable" id="viewerClose">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <div class="viewer-nav">
+                    <button class="viewer-prev clickable" id="viewerPrev">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <button class="viewer-next clickable" id="viewerNext">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="viewer-caption">
+                    <h4 class="viewer-title" id="viewerTitle"></h4>
+                    <p class="viewer-desc" id="viewerDesc"></p>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- 评价寄语模块 -->
+        <section id="comments" class="mb-16 animate-fade-in">
+            <h3 class="text-2xl font-bold mb-8 text-blue-800 flex items-center">
+                <i class="fa-solid fa-comments mr-3"></i> 评价寄语
+            </h3>
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl shadow-md p-6 card-hover">
+                <div class="flex items-center mb-4">
+                    <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                        <i class="fa-solid fa-quote-left text-blue-600"></i>
+                    </div>
+                    <h4 class="text-lg font-semibold text-gray-700">师长与同学评价</h4>
+                </div>
+                
+                <!-- 文字滚动框 -->
+                <div class="text-scroll-container border border-blue-100 bg-white/80 backdrop-blur-sm p-4">
+                    <div class="text-scroll-content">
+                        <div class="text-scroll-item">
+                            <p class="italic text-gray-700">"叶志挺同学不仅学业成绩优异，更在党务工作中表现突出，组织能力强，是同学们学习的榜样。"</p>
+                            <p class="text-right text-sm text-gray-500 mt-2">— 计算机学院党委副书记 张教授</p>
+                        </div>
+                        <div class="text-scroll-item">
+                            <p class="italic text-gray-700">"作为学习委员，他总能及时为同学们解答专业难题，分享学习资料，带动了整个班级的学习氛围。"</p>
+                            <p class="text-right text-sm text-gray-500 mt-2">— 22计科11班 李同学</p>
+                        </div>
+                        <div class="text-scroll-item">
+                            <p class="italic text-gray-700">"在志愿服务活动中，叶志挺展现出极强的责任心和领导力，策划的红色文化宣传活动获得多方好评。"</p>
+                            <p class="text-right text-sm text-gray-500 mt-2">— 红场大讲堂负责人 王老师</p>
+                        </div>
+                        <div class="text-scroll-item">
+                            <p class="italic text-gray-700">"他的编程能力和创新思维在竞赛中令人印象深刻，总能提出独特的解决方案，是团队中的核心力量。"</p>
+                            <p class="text-right text-sm text-gray-500 mt-2">— 竞赛指导老师 陈教授</p>
+                        </div>
+                        <div class="text-scroll-item">
+                            <p class="italic text-gray-700">"志挺同学兼顾学业与实践，在书法艺术上也有很深造诣，真正做到了全面发展，是国家奖学金的合适人选。"</p>
+                            <p class="text-right text-sm text-gray-500 mt-2">— 辅导员 刘老师</p>
+                        </div>
+                        <!-- 复制一份内容实现无缝滚动 -->
+                        <div class="text-scroll-item">
+                            <p class="italic text-gray-700">"叶志挺同学不仅学业成绩优异，更在党务工作中表现突出，组织能力强，是同学们学习的榜样。"</p>
+                            <p class="text-right text-sm text-gray-500 mt-2">— 计算机学院党委副书记 张教授</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4 text-center text-sm text-gray-500">
+                    <i class="fa-solid fa-hand-pointer mr-1"></i> 鼠标悬停可暂停滚动
+                </div>
+            </div>
+        </section>
+
+
+        <!-- 实践志愿模块 -->
+        <section id="practice" class="mb-16 animate-fade-in">
+            <h3 class="text-2xl font-bold mb-8 text-blue-800 flex items-center">
+                <i class="fa-solid fa-globe-asia mr-3"></i> 实践志愿
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="bg-white rounded-xl shadow-md p-6 card-hover">
+                    <h4 class="text-lg font-semibold mb-4 text-gray-700 flex items-center">
+                        <i class="fa-solid fa-hand-holding-heart text-red-500 mr-2"></i> 志愿服务
+                    </h4>
+                    <div class="mb-4">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-gray-600">累计服务时长</span>
+                            <span class="text-3xl font-bold text-red-600 num-counter" data-target="127">0</span><span class="text-xl font-bold text-red-600">h3min</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                            <div class="bg-red-600 h-2.5 rounded-full" style="width: 0%" data-width="92%"></div>
+                        </div>
+                    </div>
+                    <ul class="space-y-3 text-gray-600">
+                        <li class="flex items-start p-2 hover:bg-gray-50 rounded transition">
+                            <i class="fa-solid fa-child text-red-500 mt-1 mr-2"></i>
+                            <span>小学icode编程支教，指导学生获国家级编程金奖</span>
+                        </li>
+                        <li class="flex items-start p-2 hover:bg-gray-50 rounded transition">
+                            <i class="fa-solid fa-users text-red-500 mt-1 mr-2"></i>
+                            <span>助推老年人社区志愿服务，开展智能技术科普</span>
+                        </li>
+                        <li class="flex items-start p-2 hover:bg-gray-50 rounded transition">
+                            <i class="fa-solid fa-award text-red-500 mt-1 mr-2"></i>
+                            <span>第一届汕尾市青少年编程大赛优秀科技志愿者</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="bg-white rounded-xl shadow-md p-6 card-hover">
+                    <h4 class="text-lg font-semibold mb-4 text-gray-700 flex items-center">
+                        <i class="fa-solid fa-mountain-sun text-green-500 mr-2"></i> 社会实践
+                    </h4>
+                    <ul class="space-y-3 text-gray-600">
+                        <li class="flex items-start p-2 hover:bg-gray-50 rounded transition">
+                            <i class="fa-solid fa-leaf text-green-500 mt-1 mr-2"></i>
+                            <div>
+                                <span class="font-medium">2023年暑期"三下乡"社会实践</span>
+                                <p class="text-sm">担任项目负责人，获优秀团队、优秀调研报告</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start p-2 hover:bg-gray-50 rounded transition">
+                            <i class="fa-solid fa-landmark text-green-500 mt-1 mr-2"></i>
+                            <div>
+                                <span class="font-medium">红色文化实践</span>
+                                <p class="text-sm">参与海陆丰红色书籍分享会，作品在汕尾城镇信利艺术馆展出</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start p-2 hover:bg-gray-50 rounded transition">
+                            <i class="fa-solid fa-book text-green-500 mt-1 mr-2"></i>
+                            <div>
+                                <span class="font-medium">校庆作品捐赠</span>
+                                <p class="text-sm">2025年校庆期间，作品《博学笃行，经世致用》参展并捐赠图书馆</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            </section>
+
+
+    </main>
+
+
+    <!-- 页脚 -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4 text-center">
+            <h3 class="text-2xl font-bold mb-4">感谢聆听</h3>
+            <p class="mb-6 opacity-80">立鸿鹄志 做五先人 | 2025年国家奖学金答辩</p>
+            <div class="flex justify-center gap-4">
+                <a href="tel:13437505514" class="bg-white/10 hover:bg-white/20 transition p-3 rounded-full clickable">
+                    <i class="fa-solid fa-phone"></i>
+                </a>
+                <a href="#" class="bg-white/10 hover:bg-white/20 transition p-3 rounded-full clickable">
+                    <i class="fa-solid fa-envelope"></i>
+                </a>
+                <a href="#" class="bg-white/10 hover:bg-white/20 transition p-3 rounded-full clickable">
+                    <i class="fa-solid fa-weixin"></i>
+                </a>
+            </div>
+            <p class="mt-6 text-sm opacity-60">© 2025 叶志挺 版权所有</p>
+        </div>
+    </footer>
+
+
+    <script>
+        // 滚动渐入效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 导航栏激活状态
+            const navLinks = document.querySelectorAll('nav a');
+            const sections = document.querySelectorAll('section');
+            
+            function updateNavActive() {
+                let current = '';
+                
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.clientHeight;
+                    if (pageYOffset >= sectionTop - 100) {
+                        current = section.getAttribute('id');
+                    }
+                });
+                
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${current}`) {
+                        link.classList.add('active');
+                    }
+                });
+            }
+            
+            // 滚动时改变导航栏样式
+            function updateNavStyle() {
+                const nav = document.querySelector('nav');
+                if (window.scrollY > 50) {
+                    nav.classList.add('py-2', 'shadow');
+                    nav.classList.remove('py-3');
+                } else {
+                    nav.classList.add('py-3');
+                    nav.classList.remove('py-2', 'shadow');
+                }
+            }
+
+
+            // 渐入动画
+            const fadeElements = document.querySelectorAll('.animate-fade-in');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        
+                        // 触发进度条动画
+                        const progressBars = entry.target.querySelectorAll('[data-width]');
+                        progressBars.forEach(bar => {
+                            setTimeout(() => {
+                                bar.style.width = bar.getAttribute('data-width');
+                            }, 300);
+                        });
+                    }
+                });
+            }, { threshold: 0.1 });
+
+
+            fadeElements.forEach(element => {
+                observer.observe(element);
+            });
+
+
+            // 增强的数字动态增长动画
+            const counters = document.querySelectorAll('.num-counter');
+            counters.forEach(counter => {
+                const target = parseFloat(counter.getAttribute('data-target'));
+                const duration = 2000; // 动画持续时间
+                const frameDuration = 1000 / 60; // 每帧持续时间（60fps）
+                const totalFrames = Math.round(duration / frameDuration);
+                const easeOutQuad = t => t * (2 - t); // 缓动函数
+                
+                let frame = 0;
+                
+                const updateCounter = () => {
+                    frame++;
+                    const progress = easeOutQuad(frame / totalFrames);
+                    const currentCount = progress * target;
+                    
+                    if (frame < totalFrames) {
+                        counter.textContent = target % 1 === 0 ? Math.floor(currentCount) : currentCount.toFixed(2);
+                        requestAnimationFrame(updateCounter);
+                    } else {
+                        counter.textContent = target % 1 === 0 ? target : target.toFixed(2);
+                        counter.classList.add('count-complete'); // 添加完成动画类
+                    }
+                };
+
+
+                // 监听元素进入视口后开始计数
+                const counterObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            updateCounter();
+                            counterObserver.unobserve(entry.target);
+                        }
+                    });
+                });
+
+
+                counterObserver.observe(counter);
+            });
+
+
+            // 学习成绩图表 - 添加动画效果
+            const studyCtx = document.getElementById('studyChart').getContext('2d');
+            const studyChart = new Chart(studyCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['专业成绩', '综测表现', '技能认证', '竞赛能力', '实践素养'],
+                    datasets: [{
+                        label: '叶志挺',
+                        data: [0, 0, 0, 0, 0], // 初始值设为0
+                        backgroundColor: 'rgba(37, 99, 235, 0.2)',
+                        borderColor: 'rgba(37, 99, 235, 1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(37, 99, 235, 1)',
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                stepSize: 20
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            });
+
+
+            
+            // 图表数据填充动画
+            const chartObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // 填充学习成绩图表数据
+                        studyChart.data.datasets[0].data = [95, 98, 92, 96, 94];
+                        studyChart.update();
+                        
+                              }
+                });
+            });
+            
+            // 观察图表容器
+            chartObserver.observe(document.getElementById('studyChart').parentElement);
+
+
+            // 平滑滚动
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+
+            // 点击变色效果
+            const clickableCards = document.querySelectorAll('.card-hover');
+            clickableCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // 随机生成柔和的背景色
+                    const hue = Math.floor(Math.random() * 360);
+                    const lightness = 95; // 保持高亮度，使颜色柔和
+                    
+                    // 保存原始背景色
+                    const originalBg = this.style.backgroundColor;
+                    
+                    // 设置点击后的背景色
+                    this.style.backgroundColor = `hsl(${hue}, 70%, ${lightness}%)`;
+                    
+                    // 添加点击效果类
+                    this.classList.add('clicked');
+                    
+                    // 0.3秒后恢复原始背景色
+                    setTimeout(() => {
+                        this.style.backgroundColor = originalBg || '';
+                        this.classList.remove('clicked');
+                    }, 300);
+                });
+            });
+
+
+            // 时间线上的点点击变色效果
+            const timelineDots = document.querySelectorAll('.absolute.w-4.h-4');
+            timelineDots.forEach(dot => {
+                dot.addEventListener('click', function() {
+                    // 保存原始颜色
+                    const originalColor = this.style.backgroundColor;
+                    
+                    // 随机颜色
+                    const hue = Math.floor(Math.random() * 360);
+                    this.style.backgroundColor = `hsl(${hue}, 70%, 50%)`;
+                    
+                    // 恢复原始颜色
+                    setTimeout(() => {
+                        this.style.backgroundColor = originalColor || '';
+                    }, 500);
+                });
+            });
+
+
+            // 视差画廊功能
+            const parallaxTrack = document.querySelector('.parallax-track');
+            const parallaxItems = document.querySelectorAll('.parallax-item');
+            const parallaxPrev = document.querySelector('.parallax-prev');
+            const parallaxNext = document.querySelector('.parallax-next');
+            let parallaxPosition = 0;
+            const parallaxItemWidth = 340; // 包含间距的宽度
+            
+            function updateParallaxPosition() {
+                parallaxTrack.style.transform = `translate(-50%, -50%) translateX(${parallaxPosition * parallaxItemWidth}px)`;
+            }
+            
+            parallaxPrev.addEventListener('click', () => {
+                if (parallaxPosition < 0) {
+                    parallaxPosition++;
+                    updateParallaxPosition();
+                }
+            });
+            
+            parallaxNext.addEventListener('click', () => {
+                if (parallaxPosition > -(parallaxItems.length - 3)) {
+                    parallaxPosition--;
+                    updateParallaxPosition();
+                }
+            });
+            
+            // 拖动功能
+            let isDragging = false;
+            let startX;
+            let scrollLeft;
+            
+            parallaxTrack.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                startX = e.pageX - parallaxTrack.offsetLeft;
+                scrollLeft = parallaxPosition;
+                parallaxTrack.style.cursor = 'grabbing';
+            });
+            
+            parallaxTrack.addEventListener('mouseleave', () => {
+                isDragging = false;
+                parallaxTrack.style.cursor = 'grab';
+            });
+            
+            parallaxTrack.addEventListener('mouseup', () => {
+                isDragging = false;
+                parallaxTrack.style.cursor = 'grab';
+            });
+            
+            parallaxTrack.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                e.preventDefault();
+                const x = e.pageX - parallaxTrack.offsetLeft;
+                const walk = (x - startX) * 0.01;
+                const newPosition = scrollLeft + walk;
+                
+                // 限制拖动范围
+                if (newPosition <= 0 && newPosition >= -(parallaxItems.length - 3)) {
+                    parallaxPosition = newPosition;
+                    updateParallaxPosition();
+                }
+            });
+            
+            // 触摸支持
+            parallaxTrack.addEventListener('touchstart', (e) => {
+                isDragging = true;
+                startX = e.touches[0].pageX - parallaxTrack.offsetLeft;
+                scrollLeft = parallaxPosition;
+            }, { passive: true });
+            
+            parallaxTrack.addEventListener('touchend', () => {
+                isDragging = false;
+            });
+            
+            parallaxTrack.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                const x = e.touches[0].pageX - parallaxTrack.offsetLeft;
+                const walk = (x - startX) * 0.01;
+                const newPosition = scrollLeft + walk;
+                
+                if (newPosition <= 0 && newPosition >= -(parallaxItems.length - 3)) {
+                    parallaxPosition = newPosition;
+                    updateParallaxPosition();
+                }
+            }, { passive: true });
+            
+            // 图片查看器功能
+            const imageViewer = document.getElementById('imageViewer');
+            const viewerImage = document.getElementById('viewerImage');
+            const viewerTitle = document.getElementById('viewerTitle');
+            const viewerDesc = document.getElementById('viewerDesc');
+            const viewerClose = document.getElementById('viewerClose');
+            const viewerPrev = document.getElementById('viewerPrev');
+            const viewerNext = document.getElementById('viewerNext');
+            
+            // 获取所有可查看的图片元素
+            const viewableImages = [...document.querySelectorAll('.parallax-item'), ...document.querySelectorAll('.grid-item')];
+            let currentImageIndex = 0;
+            
+            // 打开图片查看器
+            function openImageViewer(index) {
+                currentImageIndex = index;
+                const imageElement = viewableImages[index];
+                
+                viewerImage.src = imageElement.getAttribute('data-img');
+                viewerTitle.textContent = imageElement.getAttribute('data-title');
+                viewerDesc.textContent = imageElement.getAttribute('data-desc');
+                
+                imageViewer.classList.add('active');
+                document.body.style.overflow = 'hidden'; // 防止背景滚动
+            }
+            
+            // 关闭图片查看器
+            function closeImageViewer() {
+                imageViewer.classList.remove('active');
+                document.body.style.overflow = ''; // 恢复滚动
+            }
+            
+            // 上一张图片
+            function prevImage() {
+                currentImageIndex = (currentImageIndex - 1 + viewableImages.length) % viewableImages.length;
+                openImageViewer(currentImageIndex);
+            }
+            
+            // 下一张图片
+            function nextImage() {
+                currentImageIndex = (currentImageIndex + 1) % viewableImages.length;
+                openImageViewer(currentImageIndex);
+            }
+            
+            // 为每个图片元素添加点击事件
+            viewableImages.forEach((img, index) => {
+                img.addEventListener('click', () => {
+                    openImageViewer(index);
+                });
+            });
+            
+            // 绑定查看器事件
+            viewerClose.addEventListener('click', closeImageViewer);
+            viewerPrev.addEventListener('click', prevImage);
+            viewerNext.addEventListener('click', nextImage);
+            
+            // 点击外部关闭查看器
+            imageViewer.addEventListener('click', (e) => {
+                if (e.target === imageViewer) {
+                    closeImageViewer();
+                }
+            });
+            
+            // 键盘导航
+            document.addEventListener('keydown', (e) => {
+                if (!imageViewer.classList.contains('active')) return;
+                
+                if (e.key === 'Escape') {
+                    closeImageViewer();
+                } else if (e.key === 'ArrowLeft') {
+                    prevImage();
+                } else if (e.key === 'ArrowRight') {
+                    nextImage();
+                }
+            });
+
+
+            // 滚动事件监听
+            window.addEventListener('scroll', () => {
+                updateNavActive();
+                updateNavStyle();
+            });
+
+
+            // 初始化
+            updateNavActive();
+            updateNavStyle();
+        });
+    </script>
+</body>
+</html>
