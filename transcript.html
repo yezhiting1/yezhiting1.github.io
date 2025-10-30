@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>叶志挺 - 课程成绩可视化</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .animate-fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.8s ease, transform 0.8s ease; }
+        .animate-fade-in.active { opacity: 1; transform: translateY(0); }
+        .card-hover { transition: all 0.3s ease; cursor: pointer; }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); }
+        .course-table { border-collapse: collapse; width: 100%; }
+        .course-table th, .course-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+        .course-table tr:hover { background-color: #f9fafb; }
+        .course-table th { background-color: #3b82f6; color: white; font-weight: 600; }
+        .course-table .excellent { background-color: rgba(34, 197, 94, 0.1); }
+        .course-table .good { background-color: rgba(59, 130, 246, 0.1); }
+        .course-table .average { background-color: rgba(249, 115, 22, 0.1); }
+        .tab-button { transition: all 0.3s ease; }
+        .tab-button.active { background-color: #3b82f6; color: white; }
+        .grade-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+        .grade-A { background-color: #dcfce7; color: #166534; }
+        .grade-B { background-color: #dbeafe; color: #1e40af; }
+        .grade-C { background-color: #fef3c7; color: #92400e; }
+        .course-type-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+        .type-required { background-color: #fef2f2; color: #dc2626; }
+        .type-elective { background-color: #f0f9ff; color: #0369a1; }
+        .type-public { background-color: #f0fdf4; color: #15803d; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <!-- 导航栏 -->
+    <nav class="bg-white shadow-sm py-3">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold text-blue-800">叶志挺 <span class="text-sm font-normal text-gray-500">| 课程成绩可视化</span></h1>
+            <div class="flex gap-4">
+                <a href="index.html" class="text-gray-600 hover:text-blue-700 transition">返回简历</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主要内容 -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- 标题区域 -->
+        <div class="text-center mb-12 animate-fade-in active">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 text-blue-800">课程成绩可视化分析</h2>
+            <p class="text-xl text-gray-600">2024-2025学年 第1学期 & 第2学期</p>
+            <div class="mt-6 flex flex-wrap justify-center gap-4">
+                <div class="bg-blue-100 text-blue-800 px-4 py-2 rounded-full">
+                    <i class="fa-solid fa-graduation-cap mr-2"></i> 已获得总学分: <span class="font-bold">49</span>
+                </div>
+                <div class="bg-green-100 text-green-800 px-4 py-2 rounded-full">
+                    <i class="fa-solid fa-chart-line mr-2"></i> 历年平均成绩: <span class="font-bold">92.75</span>
+                </div>
+                <div class="bg-purple-100 text-purple-800 px-4 py-2 rounded-full">
+                    <i class="fa-solid fa-star mr-2"></i> 历史平均绩点: <span class="font-bold">4.32</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 图表区域 -->
+        <section class="mb-16 animate-fade-in active">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- 学期成绩对比图 -->
+                <div class="bg-white rounded-xl shadow-md p-6 card-hover">
+                    <h3 class="text-xl font-semibold mb-6 text-gray-700 flex items-center">
+                        <i class="fa-solid fa-chart-bar text-blue-600 mr-3"></i> 学期成绩对比
+                    </h3>
+                    <div class="h-80">
+                        <canvas id="semesterComparisonChart"></canvas>
+                    </div>
+                    <div class="mt-4 text-sm text-gray-500 text-center">
+                        <p>第一学期平均成绩: <span class="font-bold text-blue-600">93.4</span> | 第二学期平均成绩: <span class="font-bold text-green-600">92.1</span></p>
+                    </div>
+                </div>
+                
+                <!-- 课程类型分布 -->
+                <div class="bg-white rounded-xl shadow-md p-6 card-hover">
+                    <h3 class="text-xl font-semibold mb-6 text-gray-700 flex items-center">
+                        <i class="fa-solid fa-chart-pie text-purple-600 mr-3"></i> 课程类型分布
+                    </h3>
+                    <div class="h-80">
+                        <canvas id="courseTypeChart"></canvas>
+                    </div>
+                    <div class="mt-4 grid grid-cols-2 gap-2 text-sm">
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
+                            <span>专业必修: 20学分</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+                            <span>专业选修: 17学分</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
+                            <span>公共必修: 5学分</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-3 h-3 bg-purple-500 rounded-full mr-2"></div>
+                            <span>公共选修: 7学分</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 绩点分布雷达图 -->
+            <div class="mt-8 bg-white rounded-xl shadow-md p-6 card-hover">
+                <h3 class="text-xl font-semibold mb-6 text-gray-700 flex items-center">
+                    <i class="fa-solid fa-radar-chart text-red-600 mr-3"></i> 绩点分布雷达图
+                </h3>
+                <div class="h-80">
+                    <canvas id="gpaRadarChart"></canvas>
+                </div>
+                <div class="mt-4 text-sm text-gray-500 text-center">
+                    <p>绩点范围: <span class="font-bold">3.3 - 4.9</span> | 平均绩点: <span class="font-bold">4.32</span></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 课程详情表格 -->
+        <section class="mb-16 animate-fade-in active">
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="p-6 border-b border-gray-200">
+                    <h3 class="text-xl font-semibold text-gray-700 flex items-center">
+                        <i class="fa-solid fa-table text-blue-600 mr-3"></i> 课程成绩详情
+                    </h3>
+                    <div class="mt-4 flex flex-wrap gap-2">
+                        <button class="tab-button px-4 py-2 rounded-lg bg-blue-100 text-blue-800 active" data-semester="all">
+                            全部课程
+                        </button>
+                        <button class="tab-button px-4 py-2 rounded-lg bg-gray-100 text-gray-800" data-semester="1">
+                            第一学期
+                        </button>
+                        <button class="tab-button px-4 py-2 rounded-lg bg-gray-100 text-gray-800" data-semester="2">
+                            第二学期
+                        </button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="course-table">
+                        <thead>
+                            <tr>
+                                <th>课程名称</th>
+                                <th>课程性质</th>
+                                <th>学分</th>
+                                <th>成绩</th>
+                                <th>绩点</th>
+                                <th>等级</th>
+                            </tr>
+                        </thead>
+                        <tbody id="courseTableBody">
+                            <!-- 表格内容将通过JavaScript动态生成 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 成绩分析总结 -->
+        <section class="animate-fade-in active">
+            <div class="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl shadow-lg p-6 text-white">
+                <h3 class="text-xl font-semibold mb-4 flex items-center">
+                    <i class="fa-solid fa-chart-line mr-3"></i> 成绩分析总结
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white/20 backdrop-blur-sm p-4 rounded-lg">
+                        <h4 class="font-semibold mb-2">学业表现</h4>
+                        <p class="text-sm">所有课程成绩均在83分以上，90分以上课程占比85%，展现出优秀的学习能力和扎实的专业基础。</p>
+                    </div>
+                    <div class="bg-white/20 backdrop-blur-sm p-4 rounded-lg">
+                        <h4 class="font-semibold mb-2">课程类型</h4>
+                        <p class="text-sm">专业必修课平均成绩93.4分，专业选修课平均成绩92.1分，体现了在专业领域的深度与广度。</p>
+                    </div>
+                    <div class="bg-white/20 backdrop-blur-sm p-4 rounded-lg">
+                        <h4 class="font-semibold mb-2">绩点分析</h4>
+                        <p class="text-sm">平均绩点4.32，多门课程获得4.5以上的高绩点，其中影视鉴赏课程获得4.9的接近满分绩点。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // 课程数据
+        const courseData = {
+            semester1: [
+                { name: "软件质量保证与测试", type: "专选", credit: 3.0, score: 93, gpa: 4.3 },
+                { name: "计算机组成原理", type: "专必", credit: 3.0, score: 83, gpa: 3.3 },
+                { name: "B/CS项目实训", type: "专必", credit: 2.0, score: 94, gpa: 4.4 },
+                { name: "网络编程技术", type: "专必", credit: 3.0, score: 93, gpa: 4.3 },
+                { name: "软件框架技术", type: "专必", credit: 4.0, score: 95, gpa: 4.5 },
+                { name: "*基于HochLab的自动控制系统建模与仿真", type: "公选", credit: 2.0, score: 96, gpa: 4.6 },
+                { name: "操作系统课程设计", type: "专必", credit: 1.0, score: 94, gpa: 4.4 },
+                { name: "操作系统", type: "专必", credit: 4.0, score: 94, gpa: 4.4 },
+                { name: "**影视鉴赏**", type: "公选", credit: 2.0, score: 99, gpa: 4.9 },
+                { name: "智能数据处理技术实训", type: "专选", credit: 1.0, score: 93, gpa: 4.3 }
+            ],
+            semester2: [
+                { name: "机器学习基础", type: "专选", credit: 3.0, score: 85, gpa: 3.5 },
+                { name: "智能应用实训", type: "专必", credit: 2.0, score: 94, gpa: 4.4 },
+                { name: "大学生职业生涯规划与就业指导 (2)", type: "公必", credit: 1.0, score: 95, gpa: 4.5 },
+                { name: "分布式框架技术", type: "专选", credit: 4.0, score: 96, gpa: 4.6 },
+                { name: "计算机专业英语", type: "专必", credit: 2.0, score: 95, gpa: 4.5 },
+                { name: "软件设计模式", type: "专选", credit: 2.0, score: 95, gpa: 4.5 },
+                { name: "劳动教育", type: "公必", credit: 2.0, score: 90, gpa: 4.5 },
+                { name: "IT项目管理", type: "专选", credit: 3.0, score: 90, gpa: 4.5 },
+                { name: "系统建模与 UML 语言", type: "专必", credit: 3.0, score: 91, gpa: 4.1 },
+                { name: "专业综合项目实训", type: "专必", credit: 2.0, score: 95, gpa: 4.5 }
+            ]
+        };
+
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化图表
+            initCharts();
+            
+            // 初始化课程表格
+            initCourseTable();
+            
+            // 绑定选项卡事件
+            bindTabEvents();
+            
+            // 添加滚动动画
+            initScrollAnimations();
+        });
+
+        // 初始化图表
+        function initCharts() {
+            // 学期成绩对比图
+            const semesterCtx = document.getElementById('semesterComparisonChart').getContext('2d');
+            new Chart(semesterCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['90分以下', '90-94分', '95分以上'],
+                    datasets: [
+                        {
+                            label: '第一学期',
+                            data: [1, 6, 3],
+                            backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: '第二学期',
+                            data: [1, 5, 4],
+                            backgroundColor: 'rgba(34, 197, 94, 0.7)',
+                            borderColor: 'rgba(34, 197, 94, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: '各分数段课程数量对比'
+                        }
+                    }
+                }
+            });
+
+            // 课程类型分布图
+            const typeCtx = document.getElementById('courseTypeChart').getContext('2d');
+            new Chart(typeCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['专业必修', '专业选修', '公共必修', '公共选修'],
+                    datasets: [{
+                        data: [20, 17, 5, 7],
+                        backgroundColor: [
+                            'rgba(59, 130, 246, 0.7)',
+                            'rgba(34, 197, 94, 0.7)',
+                            'rgba(250, 204, 21, 0.7)',
+                            'rgba(168, 85, 247, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(59, 130, 246, 1)',
+                            'rgba(34, 197, 94, 1)',
+                            'rgba(250, 204, 21, 1)',
+                            'rgba(168, 85, 247, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: ${context.raw}学分`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 绩点分布雷达图
+            const radarCtx = document.getElementById('gpaRadarChart').getContext('2d');
+            new Chart(radarCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['专业核心课', '专业选修课', '公共必修课', '公共选修课', '实践课程'],
+                    datasets: [{
+                        label: '平均绩点',
+                        data: [4.3, 4.3, 4.5, 4.75, 4.45],
+                        backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                        borderColor: 'rgba(239, 68, 68, 1)',
+                        pointBackgroundColor: 'rgba(239, 68, 68, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(239, 68, 68, 1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: {
+                                display: true
+                            },
+                            suggestedMin: 3,
+                            suggestedMax: 5
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    }
+                }
+            });
+        }
+
+        // 初始化课程表格
+        function initCourseTable() {
+            const tableBody = document.getElementById('courseTableBody');
+            
+            // 清空表格
+            tableBody.innerHTML = '';
+            
+            // 合并两个学期的数据
+            const allCourses = [...courseData.semester1, ...courseData.semester2];
+            
+            // 按成绩降序排列
+            allCourses.sort((a, b) => b.score - a.score);
+            
+            // 填充表格
+            allCourses.forEach(course => {
+                const row = document.createElement('tr');
+                
+                // 根据成绩设置行样式
+                if (course.score >= 95) {
+                    row.classList.add('excellent');
+                } else if (course.score >= 90) {
+                    row.classList.add('good');
+                } else {
+                    row.classList.add('average');
+                }
+                
+                // 成绩等级
+                let gradeClass = 'grade-C';
+                let gradeText = '良好';
+                
+                if (course.score >= 95) {
+                    gradeClass = 'grade-A';
+                    gradeText = '优秀';
+                } else if (course.score >= 90) {
+                    gradeClass = 'grade-B';
+                    gradeText = '良好';
+                }
+                
+                // 课程类型样式
+                let typeClass = 'type-required';
+                if (course.type === '专选') typeClass = 'type-elective';
+                if (course.type === '公选' || course.type === '公必') typeClass = 'type-public';
+                
+                row.innerHTML = `
+                    <td>${course.name}</td>
+                    <td><span class="course-type-badge ${typeClass}">${course.type}</span></td>
+                    <td>${course.credit}</td>
+                    <td>${course.score}</td>
+                    <td>${course.gpa}</td>
+                    <td><span class="grade-badge ${gradeClass}">${gradeText}</span></td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+        }
+
+        // 绑定选项卡事件
+        function bindTabEvents() {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // 移除所有按钮的active类
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    
+                    // 为当前按钮添加active类
+                    this.classList.add('active');
+                    
+                    // 根据按钮的data-semester属性筛选表格
+                    const semester = this.getAttribute('data-semester');
+                    filterCourseTable(semester);
+                });
+            });
+        }
+
+        // 筛选课程表格
+        function filterCourseTable(semester) {
+            const tableBody = document.getElementById('courseTableBody');
+            
+            // 清空表格
+            tableBody.innerHTML = '';
+            
+            let coursesToShow = [];
+            
+            if (semester === 'all') {
+                coursesToShow = [...courseData.semester1, ...courseData.semester2];
+            } else if (semester === '1') {
+                coursesToShow = courseData.semester1;
+            } else if (semester === '2') {
+                coursesToShow = courseData.semester2;
+            }
+            
+            // 按成绩降序排列
+            coursesToShow.sort((a, b) => b.score - a.score);
+            
+            // 填充表格
+            coursesToShow.forEach(course => {
+                const row = document.createElement('tr');
+                
+                // 根据成绩设置行样式
+                if (course.score >= 95) {
+                    row.classList.add('excellent');
+                } else if (course.score >= 90) {
+                    row.classList.add('good');
+                } else {
+                    row.classList.add('average');
+                }
+                
+                // 成绩等级
+                let gradeClass = 'grade-C';
+                let gradeText = '良好';
+                
+                if (course.score >= 95) {
+                    gradeClass = 'grade-A';
+                    gradeText = '优秀';
+                } else if (course.score >= 90) {
+                    gradeClass = 'grade-B';
+                    gradeText = '良好';
+                }
+                
+                // 课程类型样式
+                let typeClass = 'type-required';
+                if (course.type === '专选') typeClass = 'type-elective';
+                if (course.type === '公选' || course.type === '公必') typeClass = 'type-public';
+                
+                row.innerHTML = `
+                    <td>${course.name}</td>
+                    <td><span class="course-type-badge ${typeClass}">${course.type}</span></td>
+                    <td>${course.credit}</td>
+                    <td>${course.score}</td>
+                    <td>${course.gpa}</td>
+                    <td><span class="grade-badge ${gradeClass}">${gradeText}</span></td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+        }
+
+        // 初始化滚动动画
+        function initScrollAnimations() {
+            const fadeElements = document.querySelectorAll('.animate-fade-in');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            fadeElements.forEach(element => {
+                observer.observe(element);
+            });
+        }
+    </script>
+</body>
+</html>
