@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>叶志挺 - 国家奖学金候选人 | 个人简历</title>
+    <title>简历（叶志挺）</title>
     <!-- 引入Tailwind简化样式（无需本地下载） -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- 引入思维导图工具Mermaid -->
@@ -12,6 +12,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<!-- 直接可用的图标代码（使用在线图标示例，无需本地文件） -->
+    <link rel="icon" href="https://yezhiting1.github.io/image/image1.png" type="image/png">
+    <!-- 上面的链接会加载一个32x32的示例图片作为图标 -->
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
@@ -699,8 +704,8 @@
                         <li class="flex items-start p-2 hover:bg-gray-50 rounded transition">
                             <i class="fa-solid fa-star text-yellow-500 mt-1 mr-2"></i>
                             <div>
-                                <span class="font-medium">全国大学生高新技术竞赛国赛</span>
-                                <p class="text-sm text-gray-500">数据分析实操 | 一等奖</p>
+                                <span class="font-medium">金山办公算法挑战赛</span>
+                                <p class="text-sm text-gray-500">自然语言、大模型 | 第10名</p>
                             </div>
                         </li>
                         <li class="flex items-start p-2 hover:bg-gray-50 rounded transition">
@@ -1168,7 +1173,7 @@
                         <li class="flex items-start p-2 hover:bg-gray-50 rounded transition">
                             <i class="fa-solid fa-leaf text-green-500 mt-1 mr-2"></i>
                             <div>
-                                <span class="font-medium">2023年暑期"三下乡"社会实践</span>
+                                <span class="font-medium">暑期"三下乡"社会实践</span>
                                 <p class="text-sm">担任项目负责人，获优秀团队、优秀调研报告</p>
                             </div>
                         </li>
@@ -1208,13 +1213,7 @@
                         <div class="bg-blue-50 p-3 rounded text-center">PS/CDR设计</div>
                         <div class="bg-blue-50 p-3 rounded text-center">组织协调</div>
                     </div>
-                    
-                    <h3 class="text-xl font-semibold mb-4">联系方式</h3>
-                    <div class="flex flex-col gap-2 text-gray-600">
-                        <p>邮箱：1632866674@qq.com</p>
-                        <p>电话：13437505514</p>
-                        <p>班级：22计科11班</p>
-                    </div>
+                 
                 </div>
             </div>
         </section>
@@ -1222,15 +1221,70 @@
 
     <!-- 7. 底部 - 完全采用参考示例的样式 -->
     <footer class="bg-gray-800 text-white py-8">
-        <div class="container mx-auto px-4 text-center">
-            <p>© 2025 叶志挺 | 国家奖学金候选人</p>
-            <p class="mt-2 text-gray-400">立鸿鹄志 做五先人 | 计算机学院 22级计算机科学与技术</p>
+    <div class="container mx-auto px-4 text-center">
+        <p>© 2026 叶志挺 | 联系方式</p>
+        <div class="mt-2 flex justify-center gap-6 text-xl">
+            <!-- 电话图标 -->
+            <a href="javascript:void(0)" class="text-gray-300 hover:text-white transition-colors duration-300" 
+               onclick="copyToClipboard('13437505514', '电话')"
+               aria-label="复制电话号码">
+                <i class="fas fa-phone-alt"></i>
+            </a>
+            
+            <!-- 微信图标 -->
+            <a href="javascript:void(0)" class="text-gray-300 hover:text-white transition-colors duration-300"
+               onclick="copyToClipboard('13437505514', '微信')"
+               aria-label="复制微信号">
+                <i class="fab fa-weixin"></i>
+            </a>
+            
+            <!-- 邮箱图标 -->
+            <a href="javascript:void(0)" class="text-gray-300 hover:text-white transition-colors duration-300"
+               onclick="copyToClipboard('1632866674@qq.com', '邮箱')"
+               aria-label="复制邮箱地址">
+                <i class="fas fa-envelope"></i>
+            </a>
         </div>
-    </footer>
+    </div>
+</footer>
 
     <!-- 交互脚本：标签筛选、项目预览、思维导图初始化 -->
     <script>
-        // 1. 初始化思维导图
+// 复制到剪贴板功能实现
+function copyToClipboard(content, type) {
+    // 创建临时输入框
+    const tempInput = document.createElement('input');
+    document.body.appendChild(tempInput);
+    tempInput.value = content;
+    tempInput.select();
+    document.execCommand('copy');
+    document.body.removeChild(tempInput); 
+    // 显示复制成功提示
+    showToast(`${type}已复制到剪贴板: ${content}`);
+}
+// 提示消息功能
+function showToast(message) {
+    // 检查是否已有提示框，有则移除
+    const existingToast = document.querySelector('.clipboard-toast');
+    if (existingToast) {
+        existingToast.remove();
+    }
+    // 创建提示框
+    const toast = document.createElement('div');
+    toast.className = 'clipboard-toast fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white px-4 py-2 rounded shadow-lg z-50 transition-all duration-300';
+    toast.textContent = message;
+    document.body.appendChild(toast);   
+    // 3秒后自动消失
+    setTimeout(() => {
+        toast.classList.add('opacity-0');
+        setTimeout(() => {
+            toast.remove();
+        }, 300);
+    }, 3000);
+}
+
+
+    // 1. 初始化思维导图
         mermaid.initialize({ startOnLoad: true });
 
         // 2. 标签筛选功能
