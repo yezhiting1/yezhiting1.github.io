@@ -1727,11 +1727,23 @@ function showToast(message) {
             updateNavStyle();
         });
     </script>
-<script
-  src="https://leafme-ai-chat-assistant.edgeone.dev/embed.js"
-  data-color="#6366f1"
-  data-position="bottom-left"
-  async
-></script>
+<!-- 聊天助手 iframe（替代原 script） -->
+  <iframe 
+    src="https://leafme-ai-chat-assistant.edgeone.dev/embed?color=6366f1&position=bottom-left"
+    style="
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      width: 360px;
+      height: 500px;
+      border: none;
+      z-index: 999999;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      border-radius: 12px;
+      background: white;
+    "
+    allow="microphone; camera; clipboard-read; clipboard-write"
+    sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+  ></iframe>
 </body>
 </html>
