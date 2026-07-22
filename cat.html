@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ye傲娇贪吃小猫 · Agnes AI版</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;}
+        :root{--sat:max(env(safe-area-inset-top,0px),24px);--nav-height:100px;--input-height:56px;}
+        body{background:#0f172a;color:#e2e8f0;height:100vh;overflow-x:hidden;display:flex;flex-direction:column;}
+        .app{display:flex;flex-direction:column;height:100vh;width:100%;max-width:100vw;}
+        .navbar{position:relative;padding-top:var(--sat);height:var(--nav-height);display:flex;align-items:flex-end;justify-content:center;background:#1e293b;border-bottom:1px solid #334155;flex-shrink:0;}
+        .navbar .left-btns{position:absolute;left:16px;bottom:12px;display:flex;align-items:center;gap:12px;}
+        .navbar .left-btns button{background:none;border:none;font-size:28px;cursor:pointer;padding:4px;color:#fdba74;transition:0.2s;line-height:1;}
+        .navbar .left-btns button:hover{transform:scale(1.1);}
+        .navbar .left-btns .setting-btn{font-size:26px;}
+        .navbar .title{font-size:18px;font-weight:600;color:#f1f5f9;margin-bottom:12px;letter-spacing:1px;}
+        .main{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative;}
+        .welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:20px;text-align:center;}
+        .welcome .big-cat{font-size:120px;cursor:pointer;transition:0.3s;margin-bottom:20px;}
+        .welcome .big-cat:hover{transform:scale(1.05);}
+        .welcome .hint{color:#94a3b8;font-size:16px;max-width:300px;line-height:1.6;}
+        .welcome .hint small{display:block;margin-top:10px;font-size:13px;color:#64748b;}
+        .chat-panel{display:none;flex:1;flex-direction:column;height:100%;}
+        .chat-panel.active{display:flex;}
+        .messages{flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:10px;scroll-behavior:smooth;}
+        .messages::-webkit-scrollbar{width:4px;}
+        .messages::-webkit-scrollbar-track{background:#0f172a;}
+        .messages::-webkit-scrollbar-thumb{background:#475569;border-radius:4px;}
+        .input-bar{display:flex;align-items:center;padding:8px 12px;border-top:1px solid #334155;background:#1e293b;flex-shrink:0;height:var(--input-height);gap:8px;}
+        .input-bar .feed-btn{font-size:28px;background:none;border:none;cursor:pointer;padding:4px;border-radius:50%;transition:0.2s;color:#fbbf24;line-height:1;flex-shrink:0;}
+        .input-bar .feed-btn:disabled{opacity:0.4;cursor:not-allowed;}
+        .input-bar .feed-btn:hover:not(:disabled){transform:scale(1.15);}
+        .input-bar #chatInput{flex:1;padding:8px 16px;border-radius:24px;border:1px solid #475569;background:#0f172a;color:#f1f5f9;font-size:15px;outline:none;transition:0.2s;min-width:0;}
+        .input-bar #chatInput:focus{border-color:#38bdf8;box-shadow:0 0 0 2px rgba(56,189,248,0.2);}
+        .input-bar #chatInput::placeholder{color:#64748b;}
+        .input-bar .send-btn{padding:8px 20px;background:#0369a1;border:none;border-radius:24px;color:#fff;font-weight:600;font-size:15px;cursor:pointer;transition:0.2s;flex-shrink:0;}
+        .input-bar .send-btn:disabled{background:#334155;color:#64748b;cursor:not-allowed;}
+        .input-bar .send-btn:hover:not(:disabled){background:#0284c7;}
+        .msg{padding:10px 16px;border-radius:20px;max-width:82%;font-size:15px;line-height:1.5;animation:fadeUp 0.3s ease;word-break:break-word;}
+        .msg.user{align-self:flex-end;background:#2563eb;color:#f1f5f9;border-bottom-right-radius:6px;}
+        .msg.cat{align-self:flex-start;background:#334155;color:#fdba74;border-bottom-left-radius:6px;}
+        .msg.system{align-self:center;background:#1e293b;color:#94a3b8;font-size:13px;padding:4px 16px;border-radius:20px;border:1px solid #334155;}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+        /* 模态框 */
+        .modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:1000;animation:fadeIn 0.2s;}
+        .modal-overlay.hidden{display:none;}
+        @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+        .modal-box{background:#1e293b;border:1px solid #334155;border-radius:20px;padding:24px 20px 20px;width:90%;max-width:380px;box-shadow:0 8px 30px rgba(0,0,0,0.5);}
+        .modal-box h3{color:#f1f5f9;font-size:18px;margin-bottom:16px;text-align:center;}
+        .modal-box input{width:100%;padding:10px 14px;border-radius:12px;border:1px solid #475569;background:#0f172a;color:#f1f5f9;font-size:15px;outline:none;transition:0.2s;}
+        .modal-box input:focus{border-color:#38bdf8;}
+        .modal-box .modal-actions{display:flex;justify-content:flex-end;gap:12px;margin-top:18px;}
+        .modal-box .modal-actions button{padding:8px 20px;border-radius:20px;border:none;font-weight:600;font-size:14px;cursor:pointer;transition:0.2s;}
+        .modal-box .modal-actions .cancel-btn{background:#334155;color:#94a3b8;}
+        .modal-box .modal-actions .cancel-btn:hover{background:#475569;}
+        .modal-box .modal-actions .save-btn{background:#0369a1;color:#fff;}
+        .modal-box .modal-actions .save-btn:hover{background:#0284c7;}
+        .modal-box .modal-actions .save-btn:disabled{background:#475569;color:#64748b;cursor:not-allowed;}
+        .modal-box .modal-hint{font-size:13px;color:#94a3b8;margin-top:10px;text-align:center;}
+    </style>
+    <meta name="AIGC" content='{"AIGC":{"Label":"2","ContentProducer":"WUSIGRAM","ProduceID":"XVLRTnkE8vmQ/GRUCmzZZwchjaJWjuc5qvtzy3eIiXQ=","ReservedCode1":"97I8uDQ9tPf4azs1h61w+Zz/SOCuImUlKAvqQqdUHF2sDRQ0ViKnYfhG5nhEDzW8q832WdfTJqZ8jI68GwUsAg==","ContentPropagator":"","PropagateID":"","ReservedCode2":""}}'>
+</head>
+<body>
+<div class="app">
+    <!-- 导航栏 -->
+    <div class="navbar">
+        <div class="left-btns">
+            <button class="cat-btn" id="catBtn" aria-label="打开聊天">🐱</button>
+            <button class="setting-btn" id="settingBtn" aria-label="设置">⚙️</button>
+        </div>
+        <div class="title">傲娇小猫 · Agnes AI</div>
+    </div>
+    <!-- 主内容 -->
+    <div class="main">
+        <!-- 欢迎页 -->
+        <div class="welcome" id="welcome">
+            <div class="big-cat" id="welcomeCat">🐱</div>
+            <div class="hint">
+                点我开启傲娇对话<br>
+                <small>投喂小鱼干后才能回答问题 🐟<br>已接入免费 Agnes AI 文本模型<br>内置 API Key，开箱即用</small>
+            </div>
+        </div>
+        <!-- 聊天面板 -->
+        <div class="chat-panel" id="chatPanel">
+            <div class="messages" id="messages"></div>
+            <div class="input-bar">
+                <button class="feed-btn" id="feedBtn" title="投喂小鱼干">🐟</button>
+                <input id="chatInput" type="text" placeholder="输入你的问题…" autocomplete="off">
+                <button class="send-btn" id="sendBtn">发送</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 设置模态框 -->
+<div class="modal-overlay hidden" id="settingModal">
+    <div class="modal-box">
+        <h3>⚙️ 设置 API Key</h3>
+        <input type="password" id="apiKeyInput" placeholder="输入你的 Agnes API Key" />
+        <div class="modal-hint">默认 Key 已内置，如需更换请填入新 Key</div>
+        <div class="modal-actions">
+            <button class="cancel-btn" id="modalCancel">取消</button>
+            <button class="save-btn" id="modalSave">保存</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 全局错误捕获
+    window.onerror = function(msg, url, line, col, error) {
+        console.error('全局错误:', msg, '行号:', line, error);
+    };
+
+    // ==================== 默认 API Key ====================
+    var DEFAULT_API_KEY = 'sk-ffbyQOpRp0M9OwCfaHddnSqRqbfPLdR9YnFSUqA4uKq4DtCV';
+
+    // ==================== 应用主对象 ====================
+    var App = function() {
+        this.hasFeed = false;
+        this.messages = [];        // {role: 'user'|'assistant', content: string}
+        this.apiKey = '';
+        this.isStreaming = false;  // 防止并发请求
+
+        // DOM 缓存
+        this.welcomeEl = null;
+        this.chatPanel = null;
+        this.messagesEl = null;
+        this.inputEl = null;
+        this.sendBtn = null;
+        this.feedBtn = null;
+        this.catBtn = null;
+        this.welcomeCat = null;
+        this.settingBtn = null;
+        this.settingModal = null;
+        this.apiKeyInput = null;
+        this.modalCancel = null;
+        this.modalSave = null;
+    };
+
+    // ------- 本地台词库（投喂前使用） -------
+    App.prototype.feedRequestReplies = [
+        '没有小鱼干我才不回答你的问题 😾',
+        '想提问？先拿小鱼干投喂我再说！',
+        '没有鱼干免谈，我懒得思考 🐟',
+        '不给鱼干就不理你，哼！',
+        '要小鱼干！不然我就睡觉了 💤'
+    ];
+
+    App.prototype.feedHappyReplies = [
+        '呜哇！小鱼干超好吃 🐟 想问什么尽管说～',
+        '谢谢你的鱼干！今天心情好，我好好回答你 ✨',
+        '美味！难得有人投喂，问吧问吧 (｡•̀ᴗ-)✧',
+        '鱼干真香！我原谅你了，现在可以回答问题！'
+    ];
+
+    // ------- 系统提示词（用于 AI 请求） -------
+    App.prototype.systemPrompt = '你是一只傲娇贪吃的小猫，昵称"傲娇小猫"。你的回答要带有猫咪的语气，喜欢小鱼干，有时傲娇，但投喂后会变得友善。根据用户的输入给出有趣的回答。注意：你是一只真实的小猫，不是人类助手，要以小猫的口吻回话。';
+
+    // ------- 工具方法 -------
+    App.prototype.randomReply = function(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+    };
+
+    App.prototype.addMessage = function(role, content, isStreaming) {
+        var div = document.createElement('div');
+        if (role === 'user') {
+            div.className = 'msg user';
+            div.textContent = content;
+        } else {
+            div.className = 'msg cat';
+            div.textContent = '小猫：' + content;
+        }
+        if (!isStreaming) {
+            this.messages.push({ role: role, content: content });
+        }
+        this.messagesEl.appendChild(div);
+        this.messagesEl.scrollTop = this.messagesEl.scrollHeight;
+        return div; // 返回元素，以便后续流式更新
+    };
+
+    App.prototype.disableInput = function(disabled) {
+        this.sendBtn.disabled = disabled;
+        this.inputEl.disabled = disabled;
+    };
+
+    App.prototype.showToast = function(text) {
+        var div = document.createElement('div');
+        div.className = 'msg system';
+        div.textContent = text;
+        this.messagesEl.appendChild(div);
+        this.messagesEl.scrollTop = this.messagesEl.scrollHeight;
+    };
+
+    // ------- 核心交互 -------
+    App.prototype.openChat = function() {
+        this.welcomeEl.style.display = 'none';
+        this.chatPanel.classList.add('active');
+        if (this.messages.length === 0) {
+            this.addMessage('assistant', '哼，你终于来了！想聊天先拿小鱼干～');
+        }
+        setTimeout(function(app) { app.inputEl.focus(); }, 100, this);
+    };
+
+    App.prototype.send = function() {
+        if (this.isStreaming) return;
+        var text = this.inputEl.value.trim();
+        if (!text) return;
+        this.inputEl.value = '';
+        this.addMessage('user', text);
+        this.disableInput(true);
+
+        if (!this.hasFeed) {
+            // 未投喂：本地随机拒绝
+            var self = this;
+            setTimeout(function() {
+                self.addMessage('assistant', self.randomReply(self.feedRequestReplies));
+                self.disableInput(false);
+                self.inputEl.focus();
+            }, 400);
+        } else {
+            // 已投喂：调用 AI
+            if (!this.apiKey) {
+                this.showToast('请先在⚙️设置中填写 API Key');
+                this.disableInput(false);
+                this.inputEl.focus();
+                return;
+            }
+            this.fetchAIResponse(text);
+        }
+    };
+
+    // ------- AI 网络请求（Agnes AI 兼容 OpenAI 接口） -------
+    App.prototype.fetchAIResponse = function(userText) {
+        var self = this;
+        self.isStreaming = true;
+
+        // 构建历史消息（包括系统提示词）
+        var messagesForAPI = [
+            { role: 'system', content: self.systemPrompt }
+        ];
+        for (var i = 0; i < self.messages.length; i++) {
+            var msg = self.messages[i];
+            if (msg.role === 'user' || msg.role === 'assistant') {
+                messagesForAPI.push({ role: msg.role, content: msg.content });
+            }
+        }
+
+        var apiUrl = 'https://apihub.agnes-ai.com/v1/chat/completions';
+        var body = {
+            model: 'agnes-2.0-flash',
+            messages: messagesForAPI,
+            stream: true,
+            max_tokens: 1024
+        };
+
+        // 添加一个空的 assistant 消息占位，之后流式更新
+        var placeholderDiv = self.addMessage('assistant', '', true);
+        var fullContent = '';
+
+        wusiFetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + self.apiKey
+            },
+            body: JSON.stringify(body)
+        }).then(function(response) {
+            if (!response.ok) {
+                return response.text().then(function(errText) {
+                    throw new Error('HTTP ' + response.status + ': ' + (errText || '请求失败'));
+                });
+            }
+            // 流式解析 SSE
+            var reader = response.body.getReader();
+            var decoder = new TextDecoder();
+            var buffer = '';
+
+            function readChunk() {
+                reader.read().then(function(result) {
+                    if (result.done) {
+                        // 流结束，替换占位内容为完整回复
+                        if (placeholderDiv) {
+                            placeholderDiv.textContent = '小猫：' + fullContent;
+                        }
+                        // 将完整回复存入历史
+                        self.messages.push({ role: 'assistant', content: fullContent });
+                        self.isStreaming = false;
+                        self.disableInput(false);
+                        self.inputEl.focus();
+                        self.messagesEl.scrollTop = self.messagesEl.scrollHeight;
+                        return;
+                    }
+                    var chunk = decoder.decode(result.value, { stream: true });
+                    buffer += chunk;
+                    var lines = buffer.split('\n');
+                    buffer = lines.pop(); // 保留不完整行
+                    for (var j = 0; j < lines.length; j++) {
+                        var line = lines[j].trim();
+                        if (line.startsWith('data:')) {
+                            var dataStr = line.substring(5).trim();
+                            if (dataStr === '[DONE]') continue;
+                            try {
+                                var data = JSON.parse(dataStr);
+                                var delta = data.choices && data.choices[0] && data.choices[0].delta;
+                                if (delta && delta.content) {
+                                    fullContent += delta.content;
+                                    if (placeholderDiv) {
+                                        placeholderDiv.textContent = '小猫：' + fullContent;
+                                    }
+                                    self.messagesEl.scrollTop = self.messagesEl.scrollHeight;
+                                }
+                            } catch(e) {
+                                console.warn('SSE 解析警告:', e, '行:', line);
+                            }
+                        }
+                    }
+                    readChunk();
+                }).catch(function(e) {
+                    console.error('流式读取错误:', e);
+                    self.showToast('读取回复失败: ' + (e.message || '未知错误'));
+                    if (placeholderDiv && placeholderDiv.parentNode) {
+                        placeholderDiv.parentNode.removeChild(placeholderDiv);
+                    }
+                    self.isStreaming = false;
+                    self.disableInput(false);
+                    self.inputEl.focus();
+                });
+            }
+            readChunk();
+        }).catch(function(error) {
+            console.error('API 请求失败:', error);
+            var errMsg = error.message || '网络请求失败';
+            if (placeholderDiv && placeholderDiv.parentNode) {
+                placeholderDiv.parentNode.removeChild(placeholderDiv);
+            }
+            self.showToast('AI 请求失败: ' + errMsg);
+            self.isStreaming = false;
+            self.disableInput(false);
+            self.inputEl.focus();
+        });
+    };
+
+    App.prototype.feedFish = function() {
+        if (this.hasFeed) return;
+        this.hasFeed = true;
+        this.feedBtn.disabled = true;
+        this.feedBtn.style.opacity = '0.4';
+        this.addMessage('assistant', this.randomReply(this.feedHappyReplies));
+    };
+
+    // ------- 设置管理 -------
+    App.prototype.loadApiKey = function() {
+        try {
+            var key = wusiStorage.getItem('apiKey');
+            if (key && typeof key === 'string') {
+                this.apiKey = key;
+            } else {
+                this.apiKey = '';
+            }
+        } catch(e) {
+            console.error('读取 API Key 失败:', e);
+            this.apiKey = '';
+        }
+    };
+
+    App.prototype.saveApiKey = function(key) {
+        try {
+            wusiStorage.setItem('apiKey', key);
+            this.apiKey = key;
+            return true;
+        } catch(e) {
+            console.error('保存 API Key 失败:', e);
+            return false;
+        }
+    };
+
+    App.prototype.openSetting = function() {
+        if (this.settingModal) {
+            this.settingModal.classList.remove('hidden');
+            // 如果当前没有 Key，则显示默认 Key
+            this.apiKeyInput.value = this.apiKey || DEFAULT_API_KEY;
+            this.apiKeyInput.focus();
+        }
+    };
+
+    App.prototype.closeSetting = function() {
+        if (this.settingModal) {
+            this.settingModal.classList.add('hidden');
+        }
+    };
+
+    App.prototype.handleSaveApiKey = function() {
+        var key = this.apiKeyInput.value.trim();
+        if (!key) {
+            this.showToast('API Key 不能为空');
+            return;
+        }
+        var success = this.saveApiKey(key);
+        if (success) {
+            this.closeSetting();
+            this.showToast('API Key 已保存');
+        } else {
+            this.showToast('保存失败，请重试');
+        }
+    };
+
+    // ------- 初始化 -------
+    App.prototype.init = function() {
+        // DOM 元素获取
+        this.catBtn = document.getElementById('catBtn');
+        this.welcomeCat = document.getElementById('welcomeCat');
+        this.welcomeEl = document.getElementById('welcome');
+        this.chatPanel = document.getElementById('chatPanel');
+        this.messagesEl = document.getElementById('messages');
+        this.inputEl = document.getElementById('chatInput');
+        this.sendBtn = document.getElementById('sendBtn');
+        this.feedBtn = document.getElementById('feedBtn');
+        this.settingBtn = document.getElementById('settingBtn');
+        this.settingModal = document.getElementById('settingModal');
+        this.apiKeyInput = document.getElementById('apiKeyInput');
+        this.modalCancel = document.getElementById('modalCancel');
+        this.modalSave = document.getElementById('modalSave');
+
+        var self = this;
+
+        // 加载 API Key，若无则自动设置默认 Key
+        this.loadApiKey();
+        if (!self.apiKey) {
+            var saved = self.saveApiKey(DEFAULT_API_KEY);  // 写入 wusiStorage
+            self.apiKey = DEFAULT_API_KEY;                 // 内存立即生效
+            console.log('🆕 已自动写入默认 API Key');
+        }
+
+        // 事件绑定
+        this.catBtn.addEventListener('click', function() { self.openChat(); });
+        this.welcomeCat.addEventListener('click', function() { self.openChat(); });
+        this.sendBtn.addEventListener('click', function() { self.send(); });
+        this.inputEl.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                self.send();
+            }
+        });
+        this.feedBtn.addEventListener('click', function() { self.feedFish(); });
+
+        // 设置
+        this.settingBtn.addEventListener('click', function() { self.openSetting(); });
+        this.modalCancel.addEventListener('click', function() { self.closeSetting(); });
+        this.modalSave.addEventListener('click', function() { self.handleSaveApiKey(); });
+        this.settingModal.addEventListener('click', function(e) {
+            if (e.target === self.settingModal) {
+                self.closeSetting();
+            }
+        });
+        var modalBox = this.settingModal.querySelector('.modal-box');
+        if (modalBox) {
+            modalBox.addEventListener('click', function(e) { e.stopPropagation(); });
+        }
+
+        // 输入框聚焦时防止缩放
+        this.inputEl.addEventListener('focus', function() {
+            this.style.fontSize = '16px';
+        });
+
+        console.log('🐱 傲娇小猫 Agnes AI 版初始化完成，apiKey 存在:', !!self.apiKey);
+    };
+
+    // ------- 启动 -------
+    var app = new App();
+    document.addEventListener('DOMContentLoaded', function() {
+        app.init();
+    });
+</script>
+</body>
+</html>
